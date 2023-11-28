@@ -33,18 +33,18 @@ export class ApiRequests {
     }
 
     /**
-     * @description this functions provides a genneric encapsulated HTTP methods with variety of options depends on your individual request
+     * @description this functions provides a generic encapsulated HTTP methods with variety of options depends on your individual request
      * @param method 
      * @param url 
      * @param options 
      * @returns 
      */
-    private async makeRequest<T>(method: RequestMethods, url: string, options?: { queryParams?: { [key: string]: T | any }, requestData?: { [key: string]: T }, authoriaztionRequired?: boolean, multiPartFormData?: boolean, multipartObject?: { [key: string]: string } }): Promise<APIResponse | undefined> {
+    private async makeRequest<T>(method: RequestMethods, url: string, options?: { queryParams?: { [key: string]: T | any }, requestData?: { [key: string]: T }, authoriaztionRequired?: boolean, isMultiPart?: boolean, multipartObject?: { [key: string]: any } }): Promise<APIResponse | undefined> {
         let response: APIResponse | undefined
         let headers: Record<string, string> = {
             'Accept': '*/*'
         }
-        if (options?.multiPartFormData) {
+        if (options?.isMultiPart) {
             headers["Content-Type"] = 'multipart/form-data'
         } else {
             headers["Content-Type"] = 'application/json'
@@ -57,13 +57,13 @@ export class ApiRequests {
                 response = await this.apiRequestContext.get(url, { headers, params: options?.queryParams })
                 break;
             case RequestMethods.POST:
-                response = await this.apiRequestContext.post(url, { headers, data: options?.requestData, multipart: options?.multipartObject })
+                response = await this.apiRequestContext.post(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
             case RequestMethods.PUT:
-                response = await this.apiRequestContext.put(url, { headers, data: options?.requestData, multipart: options?.multipartObject })
+                response = await this.apiRequestContext.put(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
             case RequestMethods.PATCH:
-                response = await this.apiRequestContext.patch(url, { headers, data: options?.requestData, multipart: options?.multipartObject })
+                response = await this.apiRequestContext.patch(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
             case RequestMethods.DELETE:
                 response = await this.apiRequestContext.delete(url)
@@ -77,8 +77,8 @@ export class ApiRequests {
         return response;
     }
 
-    public async post<T>(url: string, data?: { [key: string]: T }) {
-        let response = await this.makeRequest(RequestMethods.POST, url, { requestData: data })
+    public async post<T>(url: string, options?: { data?: { [key: string]: T }, isMultiPart?: boolean, multiPartData?: { [key: string]: T } }) {
+        let response = await this.makeRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: options?.data, multipartObject: options?.multiPartData })
         return response;
     }
 
