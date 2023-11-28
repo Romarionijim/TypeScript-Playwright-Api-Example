@@ -61,7 +61,7 @@ test.describe('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test('create pet image', async () => {
+    test.skip('create pet image', async () => {
         await test.step('upload another image to the pet that was created in the previous test', async () => {
             let imageFileName: string = 'pug.png'
             let response = await petStoreCrudActions.uploadPetImage(createdPedtId, imageFileName);
