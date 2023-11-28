@@ -10,7 +10,7 @@ test.describe('CRUD API tests for the Pet Store API', async () => {
         petStoreCrudActions = new PetStoreCrudActions(request)
     })
 
-    test.only('get a specific pet resource', async () => {
+    test('get a specific pet resource', async () => {
         await test.step('make an api request to a specific pet ID', async () => {
             let response = await petStoreCrudActions.getPet(petId)
             let responseJson = await response?.json()
