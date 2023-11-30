@@ -72,28 +72,80 @@ export class ApiRequests {
         return response
     }
 
-    public async get<T>(url: string, queryParams?: { [key: string]: T | any }) {
-        let response = await this.makeRequest(RequestMethods.GET, url, { requestData: queryParams })
+    /**
+     * @description function that supports pagination via page pagination or by limit and offset pagination
+     */
+    private async paginateRequest<T>(method: RequestMethods, url: string, options?: { pagePagination?: boolean, limitOffsetPagination?: boolean, queryParams?: { [key: string]: any }, pageNumber?: number, limit?: number, offset?: number, requestData?: { [key: string]: T }, authoriaztionRequired?: boolean }) {
+        let existingQueryParams = { ...options?.queryParams }
+        let response: APIResponse | undefined
+        try {
+            while (true) {
+                if (options?.pagePagination && options?.pageNumber !== undefined) {
+                    let page = options?.pageNumber
+                    existingQueryParams['page'] = page
+                    response = await this.makeRequest(method, url, { queryParams: existingQueryParams, requestData: options.requestData, authoriaztionRequired: options.authoriaztionRequired })
+                    let responseObject = await response?.json()
+                    if (!responseObject || responseObject.length === 0) {
+                        break
+                    }
+                    options.pageNumber = page
+                    page++
+                }
+                if (options?.limitOffsetPagination) {
+
+                    existingQueryParams['limit'] = options.limit
+                    existingQueryParams['offset'] = options.offset
+                    response = await this.makeRequest(method, url, { queryParams: existingQueryParams, requestData: options.requestData, authoriaztionRequired: options.authoriaztionRequired })
+                    let responseObject = await response?.json()
+                    if (!responseObject || responseObject.length === 0) {
+                        break
+                    }
+                    options.limit! += options.offset!
+                }
+            }
+            return response;
+
+        } catch (error) {
+            throw new Error(`none of the conditions in the paginateRequest function were satisfied `)
+        }
+    }
+
+    /**
+     * @description make request by deciding if you want to include pagination or without paginating the request
+     */
+    private async httpRequest<T>(method: RequestMethods, url: string, options?: { queryParams?: { [key: string]: T | any }, requestData?: { [key: string]: T }, authoriaztionRequired?: boolean, isMultiPart?: boolean, multipartObject?: { [key: string]: any }, pagePagination?: boolean, limitOffsetPagination?: boolean, pageNumber?: number, limit?: number, offset?: number, paginateRequest?: boolean }) {
+        let response: APIResponse | undefined
+        if (options?.paginateRequest) {
+            response = await this.paginateRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired })
+        } else {
+            response = await this.makeRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, isMultiPart: options?.isMultiPart, multipartObject: options?.multipartObject })
+        }
+
         return response;
     }
 
-    public async post<T>(url: string, options?: { data?: { [key: string]: T }, isMultiPart?: boolean, multiPartData?: { [key: string]: T } }) {
-        let response = await this.makeRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: options?.data, multipartObject: options?.multiPartData })
+    public async get<T>(url: string, queryParams?: { [key: string]: T | any }, options?: { paginate?: boolean }) {
+        let response = await this.httpRequest(RequestMethods.GET, url, { requestData: queryParams, paginateRequest: options?.paginate })
         return response;
     }
 
-    public async put<T>(url: string, data?: { [key: string]: T }) {
-        let response = await this.makeRequest(RequestMethods.PUT, url, { requestData: data });
+    public async post<T>(url: string, data: { [key: string]: T }, options?: { isMultiPart?: boolean, multiPartData?: { [key: string]: T }, paginate?: boolean }) {
+        let response = await this.httpRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: data, multipartObject: options?.multiPartData, paginateRequest: options?.paginate })
         return response;
     }
 
-    public async patch<T>(url: string, data?: { [key: string]: T }) {
-        let response = await this.makeRequest(RequestMethods.PATCH, url, { requestData: data });
+    public async put<T>(url: string, data: { [key: string]: T }, options?: { paginate?: boolean }) {
+        let response = await this.httpRequest(RequestMethods.PUT, url, { requestData: data, paginateRequest: options?.paginate });
         return response;
     }
 
-    public async delete<T>(url: string) {
-        let response = await this.makeRequest(RequestMethods.DELETE, url);
+    public async patch<T>(url: string, data?: { [key: string]: T }, options?: { paginate?: boolean }) {
+        let response = await this.httpRequest(RequestMethods.PATCH, url, { requestData: data, paginateRequest: options?.paginate });
+        return response;
+    }
+
+    public async delete<T>(url: string, options?: { paginate?: boolean }) {
+        let response = await this.httpRequest(RequestMethods.DELETE, url, { paginateRequest: options?.paginate });
         return response;
     }
 }

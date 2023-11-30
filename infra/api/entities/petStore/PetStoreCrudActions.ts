@@ -1,4 +1,4 @@
-import { APIRequestContext } from "@playwright/test";
+import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ApiRequests } from "../../apiRequests/ApiRequests";
 import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
@@ -10,13 +10,13 @@ export class PetStoreCrudActions extends ApiRequests {
 
     private petStorePetEndpoint = `${ApplicationUrl.PET_STORE_URL}/${ApiEndpoints.PET}`
 
-    public async getPet(petId: number) {
+    public async getPet(petId: number): Promise<APIResponse | undefined> {
         let response = await this.get(`${this.petStorePetEndpoint}/${petId}`)
         return response;
     }
 
     public async createNewPet<T>(petData: { [key: string]: T }) {
-        let response = await this.post(this.petStorePetEndpoint, { data: petData })
+        let response = await this.post(this.petStorePetEndpoint, petData)
         return response;
     }
 
@@ -53,5 +53,15 @@ export class PetStoreCrudActions extends ApiRequests {
 
         // return res;
 
+    }
+
+    public async updatePet<T>(updatedData: { [key: string]: T }) {
+        let response = await this.put(this.petStorePetEndpoint, updatedData)
+        return response;
+    }
+
+    public async deletePet(petId: number) {
+        let response = await this.delete(`${this.petStorePetEndpoint}/${petId}`)
+        return response;
     }
 }

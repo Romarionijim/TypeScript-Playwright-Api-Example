@@ -7,8 +7,8 @@ import Randomizer from '../../../infra/api/helpers/faker/Randomizer';
 
 test.describe('CRUD API tests for the Pet Store API', async () => {
     let petStoreCrudActions: PetStoreCrudActions;
-    let petId: number = 10;
-    let createdPedtId: number = 3193;
+    let id: number = 10;
+    let petId: number = 3193;
 
 
     test.beforeEach(async ({ request }) => {
@@ -17,7 +17,7 @@ test.describe('CRUD API tests for the Pet Store API', async () => {
 
     test('get a specific pet for sanity checkup @PET_STORE', async () => {
         await test.step('make an api request to a specific pet ID', async () => {
-            let response = await petStoreCrudActions.getPet(petId)
+            let response = await petStoreCrudActions.getPet(id)
             let responseJson: Ipet = await response?.json()
             expect(response?.status()).toBe(StatusCode.OK)
             expect(responseJson.name).toBe('doggie')
@@ -27,12 +27,12 @@ test.describe('CRUD API tests for the Pet Store API', async () => {
     test('create a new pet @PET_STORE', async () => {
         await test.step('create a new pet via post request', async () => {
             let petData = {
-                id: Randomizer.getRandomLongNumber(),
+                id: petId,
                 category: {
                     id: Randomizer.getRandomLongNumber(),
                     name: Randomizer.getRandomName()
                 },
-                name: Randomizer.getDogNameBreed(),
+                name: 'Pikachu',
                 photoUrls: ['https://ibb.co/wLWCrSX'],
                 tags: [
                     {
@@ -52,29 +52,59 @@ test.describe('CRUD API tests for the Pet Store API', async () => {
 
     test('validate the pet existance', async () => {
         await test.step('validate the pet that was created from previous test now exists', async () => {
-            let response = await petStoreCrudActions.getPet(createdPedtId)
+            let response = await petStoreCrudActions.getPet(petId)
             let responseBody: Ipet = await response?.json();
             expect(response).toBeTruthy()
             expect(response?.status()).toBe(StatusCode.OK)
-            expect(responseBody.id).toEqual(createdPedtId)
-            expect(responseBody.name).toEqual('Shiloh Shepherd')
+            expect(responseBody.id).toEqual(petId)
+            expect(responseBody.name).toEqual('Pikachu')
         })
     })
 
     test.skip('create pet image', async () => {
         await test.step('upload another image to the pet that was created in the previous test', async () => {
             let imageFileName: string = 'pug.png'
-            let response = await petStoreCrudActions.uploadPetImage(createdPedtId, imageFileName);
+            let response = await petStoreCrudActions.uploadPetImage(petId, imageFileName);
             expect(response?.status()).toBe(StatusCode.OK);
 
         })
     })
 
-    // (property) multipart?: {
-    //     [key: string]: string | number | boolean | ReadStream | {
-    //         name: string;
-    //         mimeType: string;
-    //     };
-    // } | undefined
+    test('update pet', async () => {
+        await test.step('update the newly created pet that was created in previous test', async () => {
+            let petData = {
+                id: petId,
+                category: {
+                    id: Randomizer.getRandomLongNumber(),
+                    name: Randomizer.getRandomName()
+                },
+                name: 'Pokey',
+                photoUrls: ['https://ibb.co/0Z9v02Z'],
+                tags: [
+                    {
+                        id: Randomizer.getRandomLongNumber(),
+                        name: Randomizer.getRandomName(),
+                    }
+                ],
+                status: 'available'
+            }
+            let response = await petStoreCrudActions.updatePet(petData)
+            let responseBody: Ipet = await response?.json();
+            expect(response?.status()).toBe(StatusCode.OK)
+            expect(responseBody.name).toEqual('Pokey');
+        })
+    })
+
+    test('delete pet', async () => {
+        await test.step('delete the pet that was created and updated in previous tests', async () => {
+            let response = await petStoreCrudActions.deletePet(petId)
+            expect(response?.status()).toBe(StatusCode.OK)
+        })
+
+        await test.step('retrieve the deleted pet and validate it does not exist by validating response returns 404', async () => {
+            let deletedPet = await petStoreCrudActions.getPet(petId)
+            expect(deletedPet?.status()).toBe(StatusCode.NOT_FOUND);
+        })
+    })
 
 })
