@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test'
 import { PokemonApi } from '../../../infra/api/entities/pokemon/PokemonApi'
-import { StatusCode } from '../../../infra/api/apiRequests/ApiRequests'
+import { ApiRequests, StatusCode } from '../../../infra/api/apiRequests/ApiRequests'
 import { tr } from '@faker-js/faker'
+import { ApiEndpoints } from '../../../infra/api/endpoints/ApiEndpoints'
 
 test.describe('Pokemon API CRUD tests', async () => {
     let pokemonApi: PokemonApi
+    let apiRequests: ApiEndpoints;
     let limit: number = 100;
     let offset: number = 0
     let TRUE: boolean = true;
@@ -30,8 +32,10 @@ test.describe('Pokemon API CRUD tests', async () => {
 
     test('get all pokemon resources', async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
-            let response = await pokemonApi.getAllPokemonRecourses(limit, offset, { limitOffset: TRUE });
-            let responseJson = await response?.json();
+            let response = await pokemonApi.getAllPokemonRecourses(limit, offset, { limitOffsetPagination: true })
+            expect(response?.status()).toBe(StatusCode.OK)
+            
+
 
         })
     })
