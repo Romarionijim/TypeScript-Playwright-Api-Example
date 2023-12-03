@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { PetStoreCrudActions } from '../../../infra/api/entities/petStore/PetStoreCrudActions'
 import { STATUS_CODES } from 'http';
 import { StatusCode } from '../../../infra/api/apiRequests/ApiRequests';
-import { Ipet } from '../../../infra/api/interfaces/ApiObjectsInterfaces';
+import { Ipet } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
 import Randomizer from '../../../infra/api/helpers/faker/Randomizer';
 
 test.describe.serial('CRUD API tests for the Pet Store API', async () => {
@@ -66,7 +66,6 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
             let imageFileName: string = 'pug.png'
             let response = await petStoreCrudActions.uploadPetImage(petId, imageFileName);
             expect(response?.status()).toBe(StatusCode.OK);
-
         })
     })
 
@@ -106,5 +105,4 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
             expect(deletedPet?.status()).toBe(StatusCode.NOT_FOUND);
         })
     })
-
 })

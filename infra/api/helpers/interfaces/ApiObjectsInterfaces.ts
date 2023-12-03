@@ -12,7 +12,13 @@ export interface IpokemonResults {
     url: string
 }
 
-
-export interface IgoRestApi {
-
+/**
+ * @description GoRestApi User Entity
+ */
+export interface IUser {
+    id?: number,
+    name?: string,
+    email?: string,
+    gender?: string,
+    status?: string,
 }

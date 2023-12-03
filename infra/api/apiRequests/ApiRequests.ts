@@ -30,10 +30,9 @@ export interface ApiOptionalParams<T> {
     paginateRequest?: boolean,
     pagePagination?: boolean,
     limitOffsetPagination?: boolean,
-    pageNumber?: number, limit?: number,
+    pageNumber?: number,
+    limit?: number,
     offset?: number,
-    limitNumber?: number,
-
 }
 
 
@@ -114,7 +113,7 @@ export class ApiRequests {
                     existingQueryParams['offset'] = options.offset
                     response = await this.makeRequest(method, url, { queryParams: existingQueryParams, requestData: options.requestData, authoriaztionRequired: options.authoriaztionRequired })
                     let responseObject = await response?.json()
-                    if (!responseObject || responseObject.length === 0 ) {
+                    if (!responseObject || responseObject.length === 0) {
                         break
                     }
                     if (options.responseDataKey !== undefined) {
@@ -156,24 +155,22 @@ export class ApiRequests {
     }
 
     public async post<T>(url: string, data: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: data, multipartObject: options?.multipartObject, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination })
+        let response = await this.httpRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: data, multipartObject: options?.multipartObject, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired })
         return response
     }
 
     public async put<T>(url: string, data: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.PUT, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination });
+        let response = await this.httpRequest(RequestMethods.PUT, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
         return response
     }
 
     public async patch<T>(url: string, data?: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.PATCH, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination });
+        let response = await this.httpRequest(RequestMethods.PATCH, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
         return response;
     }
 
     public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.DELETE, url, { paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination });
+        let response = await this.httpRequest(RequestMethods.DELETE, url, { paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
         return response;
     }
-
-
 }

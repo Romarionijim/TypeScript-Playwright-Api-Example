@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { PokemonApi } from '../../../infra/api/entities/pokemon/PokemonApi'
 import { ApiRequests, StatusCode } from '../../../infra/api/apiRequests/ApiRequests'
-import { IpokemonResults } from '../../../infra/api/interfaces/ApiObjectsInterfaces'
+import { IpokemonResults } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces'
 
 test.describe('Pokemon API CRUD tests', async () => {
     let pokemonApi: PokemonApi
