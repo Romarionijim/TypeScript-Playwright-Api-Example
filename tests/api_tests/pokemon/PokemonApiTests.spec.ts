@@ -1,12 +1,10 @@
 import { expect, test } from '@playwright/test'
 import { PokemonApi } from '../../../infra/api/entities/pokemon/PokemonApi'
 import { ApiRequests, StatusCode } from '../../../infra/api/apiRequests/ApiRequests'
-import { tr } from '@faker-js/faker'
-import { ApiEndpoints } from '../../../infra/api/endpoints/ApiEndpoints'
+import { IpokemonResults } from '../../../infra/api/interfaces/ApiObjectsInterfaces'
 
 test.describe('Pokemon API CRUD tests', async () => {
     let pokemonApi: PokemonApi
-    let apiRequests: ApiEndpoints;
     let limit: number = 100;
     let offset: number = 0
     let TRUE: boolean = true;
@@ -15,7 +13,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         pokemonApi = new PokemonApi(request);
     })
 
-    test('GET the pokemon resources', async () => {
+    test('GET the pokemon resources @POKEMON_API', async () => {
         await test.step('GET first 20 pokemon resources by default and validate initial response', async () => {
             let res = await pokemonApi.getPokemon();
             let jsonResponse = await res?.json()
@@ -30,13 +28,24 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-    test('get all pokemon resources', async () => {
+    test('get all pokemon resources @POKEMON_API', async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
             let response = await pokemonApi.getAllPokemonRecourses(limit, offset, { limitOffsetPagination: true })
-            expect(response?.status()).toBe(StatusCode.OK)
-            
+            let responseLength = response.length
+            expect(responseLength).toBe(1292)
+        })
+    })
 
 
+    test('response keys type validation @POKEMON_API', async () => {
+        await test.step('validate that each key in the results response object are equals to strings', async () => {
+            let res = await pokemonApi.getPokemon()
+            let resJson = await res?.json()
+            let results = resJson['results']
+            let resultsNameType = results.every((el: { [key: string]: any }) => typeof el['name'] === 'string')
+            let resultsUrlType = results.every((el: { [key: string]: any }) => typeof el['name'] === 'string')
+            expect(resultsNameType).toBe(true)
+            expect(resultsUrlType).toBe(true)
         })
     })
 })

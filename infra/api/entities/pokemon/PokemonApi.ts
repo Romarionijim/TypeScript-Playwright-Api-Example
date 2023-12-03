@@ -1,5 +1,5 @@
-import { APIResponse } from "@playwright/test";
-import { ApiRequests } from "../../apiRequests/ApiRequests";
+import { APIRequestContext, APIResponse, expect } from "@playwright/test";
+import { ApiRequests, RequestMethods, StatusCode } from "../../apiRequests/ApiRequests";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 
 export class PokemonApi extends ApiRequests {
@@ -15,7 +15,14 @@ export class PokemonApi extends ApiRequests {
      * @description get all pokemon recourses by using pagination - you can choose via page or limit and offset pagination mechanism
      */
     public async getAllPokemonRecourses(limit: number, offset: number, options?: { pagePagination?: boolean, limitOffsetPagination?: boolean }) {
-        let response = await this.get(this.POKEMON_ENDPOINT, { paginateRequest: true, limit: limit, offset: offset, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: 'results' })
-        return response;   
+        let responses = await this.paginateRequest(RequestMethods.GET, this.POKEMON_ENDPOINT, { limit: limit, offset: offset, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: 'results' })
+        return responses;
+    }
+
+    public async createPokemon() {
+        const data = {
+            
+        }
+        let response = await this.post(this.POKEMON_ENDPOINT, data)
     }
 }

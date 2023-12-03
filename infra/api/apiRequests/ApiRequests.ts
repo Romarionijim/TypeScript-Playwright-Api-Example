@@ -36,6 +36,7 @@ export interface ApiOptionalParams<T> {
 
 }
 
+
 export class ApiRequests {
     constructor(public apiRequestContext: APIRequestContext) {
         this.apiRequestContext = apiRequestContext
@@ -92,7 +93,7 @@ export class ApiRequests {
     /**
      * @description function that supports pagination via page pagination or by limit and offset pagination
      */
-    private async paginateRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>) {
+    protected async paginateRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>) {
         let existingQueryParams = { ...options?.queryParams }
         let response: APIResponse | undefined
         let responses: APIResponse[] = []
@@ -113,7 +114,7 @@ export class ApiRequests {
                     existingQueryParams['offset'] = options.offset
                     response = await this.makeRequest(method, url, { queryParams: existingQueryParams, requestData: options.requestData, authoriaztionRequired: options.authoriaztionRequired })
                     let responseObject = await response?.json()
-                    if (!responseObject && options || responseObject.length === 0) {
+                    if (!responseObject || responseObject.length === 0 ) {
                         break
                     }
                     if (options.responseDataKey !== undefined) {
@@ -123,42 +124,41 @@ export class ApiRequests {
                         }
                         responses.push(...responseKey)
                     } else {
-                        responses.push(...responseObject)
+                        if (Array.isArray(responseObject)) {
+                            responses.push(...responseObject)
+                        } else {
+                            responses.push(responseObject)
+                        }
                     }
                     if (options.offset !== undefined && options.limit !== undefined) {
                         options.offset += options.limit
                     }
                 }
             }
-            return responses;
+            return responses
 
         } catch (error) {
             throw new Error(`caught an error in the paginate request function: ${error}`)
         }
     }
 
-    /**
-     * @description return an array of responses in case pagination is required
-     * @param method 
-     * @param url 
-     * @param options 
-     * @returns 
-     */
-    private async getPaginatedResponseArray<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse[]> {
-        let responses = await this.paginateRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, offset: options?.offset, limit: options?.limit, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: options?.responseDataKey })
-        return responses;
-    }
+    // /**
+    //  * @description return an array of responses in case pagination is required
+    //  * @param method 
+    //  * @param url 
+    //  * @param options 
+    //  * @returns 
+    //  */
+    // private async getPaginatedResponseArray<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse[]> {
+    //     let responses = await this.paginateRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, offset: options?.offset, limit: options?.limit, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: options?.responseDataKey })
+    //     return responses;
+    // }
 
     /**
-     * @description make request by deciding if you want to include pagination or without paginating the request
+     * @description http request that abstracts the logic behind the scenes 
      */
     private async httpRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>) {
-        let response: APIResponse | undefined
-        if (options?.paginateRequest) {
-            await this.getPaginatedResponseArray(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, isMultiPart: options?.isMultiPart, multipartObject: options?.multipartObject, limitOffsetPagination: options.limitOffsetPagination, pagePagination: options.pagePagination, limit: options.limit, offset: options.offset, responseDataKey: options.responseDataKey })
-        } else {
-            response = await this.makeRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, isMultiPart: options?.isMultiPart, multipartObject: options?.multipartObject })
-        }
+        let response = await this.makeRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, isMultiPart: options?.isMultiPart, multipartObject: options?.multipartObject })
         return response;
     }
 

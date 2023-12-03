@@ -7,11 +7,12 @@ export interface Ipet {
     status?: string,
 }
 
-export interface Ipokemon {
-
+export interface IpokemonResults {
+    name: string,
+    url: string
 }
 
 
 export interface IgoRestApi {
-    
+
 }
