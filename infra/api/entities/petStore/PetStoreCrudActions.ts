@@ -64,4 +64,5 @@ export class PetStoreCrudActions extends ApiRequests {
         let response = await this.delete(`${this.petStorePetEndpoint}/${petId}`)
         return response;
     }
+    
 }
