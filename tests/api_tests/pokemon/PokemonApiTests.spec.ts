@@ -7,7 +7,6 @@ test.describe('Pokemon API CRUD tests', async () => {
     let pokemonApi: PokemonApi
     let limit: number = 100;
     let offset: number = 0
-    let TRUE: boolean = true;
 
     test.beforeEach(async ({ request }) => {
         pokemonApi = new PokemonApi(request);
@@ -43,7 +42,7 @@ test.describe('Pokemon API CRUD tests', async () => {
             let resJson = await res?.json()
             let results = resJson['results']
             let resultsNameType = results.every((el: { [key: string]: any }) => typeof el['name'] === 'string')
-            let resultsUrlType = results.every((el: { [key: string]: any }) => typeof el['name'] === 'string')
+            let resultsUrlType = results.every((el: { [key: string]: any }) => typeof el['url'] === 'string')
             expect(resultsNameType).toBe(true)
             expect(resultsUrlType).toBe(true)
         })

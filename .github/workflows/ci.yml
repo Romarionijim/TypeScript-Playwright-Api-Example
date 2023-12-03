@@ -4,6 +4,10 @@ on:
     branches: '*'
   pull_request:
     branches: [ main, master ]
+
+env:    
+  TOKEN: ${{ secrets.TOKEN }}
+
 jobs:
   test:
     timeout-minutes: 60

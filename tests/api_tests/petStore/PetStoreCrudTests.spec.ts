@@ -5,7 +5,7 @@ import { StatusCode } from '../../../infra/api/apiRequests/ApiRequests';
 import { Ipet } from '../../../infra/api/interfaces/ApiObjectsInterfaces';
 import Randomizer from '../../../infra/api/helpers/faker/Randomizer';
 
-test.describe('CRUD API tests for the Pet Store API', async () => {
+test.describe.serial('CRUD API tests for the Pet Store API', async () => {
     let petStoreCrudActions: PetStoreCrudActions;
     let id: number = 10;
     let petId: number = 3193;

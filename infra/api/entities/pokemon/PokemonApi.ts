@@ -18,11 +18,4 @@ export class PokemonApi extends ApiRequests {
         let responses = await this.paginateRequest(RequestMethods.GET, this.POKEMON_ENDPOINT, { limit: limit, offset: offset, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: 'results' })
         return responses;
     }
-
-    public async createPokemon() {
-        const data = {
-            
-        }
-        let response = await this.post(this.POKEMON_ENDPOINT, data)
-    }
 }

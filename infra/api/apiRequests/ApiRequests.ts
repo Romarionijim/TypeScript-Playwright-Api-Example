@@ -47,7 +47,7 @@ export class ApiRequests {
      * @param headers 
      */
     private async addAuthorizationHeader(headers: { [key: string]: string }) {
-        headers['Authorization'] = `Bearer ${process.env.TOKEN}`
+        headers['Authorization'] = `Bearer ${process.env.API_TOKEN}`
     }
 
     /**
@@ -141,18 +141,6 @@ export class ApiRequests {
             throw new Error(`caught an error in the paginate request function: ${error}`)
         }
     }
-
-    // /**
-    //  * @description return an array of responses in case pagination is required
-    //  * @param method 
-    //  * @param url 
-    //  * @param options 
-    //  * @returns 
-    //  */
-    // private async getPaginatedResponseArray<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse[]> {
-    //     let responses = await this.paginateRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, offset: options?.offset, limit: options?.limit, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: options?.responseDataKey })
-    //     return responses;
-    // }
 
     /**
      * @description http request that abstracts the logic behind the scenes 
