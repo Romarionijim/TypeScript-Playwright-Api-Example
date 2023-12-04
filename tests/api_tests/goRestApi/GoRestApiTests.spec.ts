@@ -1,7 +1,7 @@
 import { test, request, expect } from '@playwright/test'
-import { Users } from '../../infra/api/entities/gorestapi/Users'
-import { StatusCode } from '../../infra/api/apiRequests/ApiRequests';
-import { IUser } from '../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
+import { StatusCode } from '../../../infra/api/apiRequests/ApiRequests';
+import { IUser } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
+import { Users } from '../../../infra/api/entities/gorestapi/Users';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
     let users: Users;
@@ -25,18 +25,9 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
             let response = await users.getUsers();
             expect(response?.status()).toBe(StatusCode.OK)
             expect(response?.body()).toBeTruthy()
-            let userObject = await users.getTypeOfUserProperies()
-            expect(userObject).toEqual([
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string'],
-                ['number', 'string', 'string', 'string', 'string']])
+            let actualObjectProperties = await users.getTypeOfUserProperies()
+            let expectedObjectProperties = new Array(actualObjectProperties.length).fill(['number', 'string', 'string', 'string', 'string'])
+            expect(actualObjectProperties).toEqual(expectedObjectProperties)
         })
     })
 
@@ -58,8 +49,18 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
             let response = await users.replaceEmailExtensionForUsers()
             expect(response?.status()).toBe(StatusCode.OK)
             let actualEmailExtensions = await users.getCurrentUserEmailExtension()
-            let expectedExtensions = new Array(actualEmailExtensions.length).fill('co.il')
+            let expectedExtensions = new Array(actualEmailExtensions.length).fill('.co.il')
             expect(actualEmailExtensions).toEqual(expectedExtensions)
+        })
+    })
+
+    test('delete inactive users', async () => {
+        await test.step('make a request to delete all users that have an inactive status', async () => {
+            let response = await users.deleteInactiveUsers()
+            expect(response?.status()).toBe(StatusCode.UNAUTHORIZED)
+            let actualInactiveUsers = await users.getInActiveUsers()
+            let expectedInactiveUsersLength = actualInactiveUsers.length
+            expect(expectedInactiveUsersLength).toBe(0)
         })
     })
 })

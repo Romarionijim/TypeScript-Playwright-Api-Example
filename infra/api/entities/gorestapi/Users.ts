@@ -70,13 +70,16 @@ export class Users extends ApiRequests {
         }
     }
 
+    private async getUserStatus(status: string) {
+        let users = await this.get(this.usersEnpoint)
+        let usersJsonObject = await users?.json()
+        let inactiveUsesrs = usersJsonObject.filter((user: { status: string; }) => user.status === status)
+        return inactiveUsesrs
+    }
+
     public async getInActiveUsers() {
-        let queryParams = {
-            status: 'inactive'
-        }
-        let response = await this.get(this.usersEnpoint, { queryParams })
-        let inActiveUsersObject = await response?.json()
-        return inActiveUsersObject;
+        let res = await this.getUserStatus('inactive')
+        return res
     }
 
     public async deleteInactiveUsers() {
@@ -124,7 +127,7 @@ export class Users extends ApiRequests {
             for (let user of usersObject) {
                 let emailExtension = await this.extractEmailExtension(user.email)
                 if (emailExtension && emailExtension !== 'co.il') {
-                    let newEmail = emailExtension.replace(emailExtension, 'co.il')
+                    let newEmail = await this.replaceEmailExtension(user.email, '.co.il')
                     let newEmailProperty = { email: newEmail }
                     response = await this.patch(`${this.usersEnpoint}/${user.id}`, newEmailProperty, { authoriaztionRequired: true })
                 }
@@ -139,11 +142,22 @@ export class Users extends ApiRequests {
         let extensions: string[] = []
         let users = await this.getUsers()
         let usersJsonObject = await users?.json()
-        let userEmails = usersJsonObject.email
-        for (let email of userEmails) {
-            let extension = await this.extractEmailExtension(email)
+        let userEmails = usersJsonObject
+        for (let user of userEmails) {
+            let extension = await this.extractEmailExtension(user.email)
             extensions.push(extension!)
         }
         return extensions
+    }
+
+    private async replaceEmailExtension(email: string, newExtension: string) {
+        let emailWithoutDomain = email.substring(0, email.lastIndexOf('@'))
+        let emailDomain = email.split('@').pop()
+        let domainWithoutExtension = emailDomain?.substring(0, emailDomain.lastIndexOf('.'))
+        let emailExtension = emailDomain?.substring(emailDomain.lastIndexOf('.'))
+        let extensionSwap = emailExtension?.replace(emailExtension, newExtension)
+        let newEmail = `${emailWithoutDomain}@${domainWithoutExtension}${extensionSwap}`
+        return newEmail
+
     }
 }
