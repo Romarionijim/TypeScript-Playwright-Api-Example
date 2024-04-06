@@ -36,23 +36,6 @@ export class PetStoreCrudActions extends ApiClient {
         }
         let response = await this.post(`${this.petStorePetEndpoint}/${petId}/${ApiEndpoints.UPLOAD_IMAGE}`, { isMultiPart: true, multiPartData })
         return response;
-        // let res = await this.apiRequestContext.post(``, {
-        //     headers: {
-        //         'Accept': "*/*",
-        //         'Content-Type': "multipart/form-data",
-        //     },
-        //     multipart: {
-        //         file: {
-        //             name: file,
-        //             mimeType: "image/png",
-        //             buffer: image,
-        //         },
-
-        //     }
-        // })
-
-        // return res;
-
     }
 
     public async updatePet<T>(updatedData: { [key: string]: T }) {

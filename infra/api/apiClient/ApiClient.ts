@@ -70,19 +70,19 @@ export class ApiClient {
             await this.addAuthorizationHeader(headers)
         }
         switch (method.valueOf()) {
-            case RequestMethods.GET:
+            case 'GET':
                 response = await this.apiRequestContext.get(url, { headers, params: options?.queryParams })
                 break;
-            case RequestMethods.POST:
+            case 'POST':
                 response = await this.apiRequestContext.post(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
-            case RequestMethods.PUT:
+            case 'PUT':
                 response = await this.apiRequestContext.put(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
-            case RequestMethods.PATCH:
+            case 'PATCH':
                 response = await this.apiRequestContext.patch(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
                 break;
-            case RequestMethods.DELETE:
+            case 'DELETE':
                 response = await this.apiRequestContext.delete(url)
                 break;
         }
