@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        greps: ['@PET_STORE_API, @POKEMON_API']
+        greps: ['@PET_STORE_API', '@POKEMON_API']
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
