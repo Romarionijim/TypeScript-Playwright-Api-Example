@@ -1,9 +1,9 @@
 import { APIResponse } from "@playwright/test";
-import { ApiRequests, RequestMethods } from "../../apiRequests/ApiRequests";
+import { ApiClient, RequestMethods } from "../../apiClient/ApiClient";
 import Randomizer from "../../helpers/faker/Randomizer";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 
-export class Users extends ApiRequests {
+export class Users extends ApiClient {
     private usersEnpoint = `${ApplicationUrl.GO_REST_API}/users`
 
     public async getUsers() {
@@ -41,25 +41,25 @@ export class Users extends ApiRequests {
             if (maleUsers === femaleUsers) {
                 return response;
             } else if (maleUsers > femaleUsers) {
-                let femaleData = {
-                    id: Randomizer.getRandomNumber(),
-                    name: Randomizer.getRandomFemaleFirstName(),
-                    email: Randomizer.getRandomEmail(),
-                    gender: 'female',
-                    status: 'active',
-                }
                 for (let i = 0; i < differrence; i++) {
+                    let femaleData = {
+                        id: Randomizer.getRandomNumber(),
+                        name: Randomizer.getRandomFemaleFirstName(),
+                        email: Randomizer.getRandomEmail(),
+                        gender: 'female',
+                        status: 'active',
+                    }
                     response = await this.post(this.usersEnpoint, femaleData, { authoriaztionRequired: true })
                 }
             } else {
-                let maleData = {
-                    id: Randomizer.getRandomNumber(),
-                    name: Randomizer.getRandomMaleFirstName(),
-                    email: Randomizer.getRandomEmail(),
-                    gender: 'male',
-                    status: 'active',
-                }
                 for (let i = 0; i < differrence; i++) {
+                    let maleData = {
+                        id: Randomizer.getRandomNumber(),
+                        name: Randomizer.getRandomMaleFirstName(),
+                        email: Randomizer.getRandomEmail(),
+                        gender: 'male',
+                        status: 'active',
+                    }
                     response = await this.post(this.usersEnpoint, maleData, { authoriaztionRequired: true })
                 }
             }

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { PetStoreCrudActions } from '../../../infra/api/entities/petStore/PetStoreCrudActions'
 import { STATUS_CODES } from 'http';
-import { StatusCode } from '../../../infra/api/apiRequests/ApiRequests';
+import { StatusCode } from '../../../infra/api/apiClient/ApiClient';
 import { Ipet } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
 import Randomizer from '../../../infra/api/helpers/faker/Randomizer';
 
@@ -15,7 +15,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         petStoreCrudActions = new PetStoreCrudActions(request)
     })
 
-    test('get a specific pet for sanity checkup @PET_STORE', async () => {
+    test('get a specific pet for sanity checkup', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('make an api request to a specific pet ID', async () => {
             let response = await petStoreCrudActions.getPet(id)
             let responseJson: Ipet = await response?.json()
@@ -24,7 +24,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test('create a new pet @PET_STORE', async () => {
+    test('create a new pet', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('create a new pet via post request', async () => {
             let petData = {
                 id: petId,
@@ -50,7 +50,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test('validate the pet existance @PET_STORE', async () => {
+    test('validate the pet existance', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('validate the pet that was created from previous test now exists', async () => {
             let response = await petStoreCrudActions.getPet(petId)
             let responseBody: Ipet = await response?.json();
@@ -61,7 +61,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test.skip('create pet image @PET_STORE', async () => {
+    test.skip('create pet image', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('upload another image to the pet that was created in the previous test', async () => {
             let imageFileName: string = 'pug.png'
             let response = await petStoreCrudActions.uploadPetImage(petId, imageFileName);
@@ -69,7 +69,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test('update pet @PET_STORE', async () => {
+    test('update pet', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('update the newly created pet that was created in previous test', async () => {
             let petData = {
                 id: petId,
@@ -94,7 +94,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
         })
     })
 
-    test('delete pet @PET_STORE', async () => {
+    test('delete pet', { tag: ['@PET_STORE_API'] }, async () => {
         await test.step('delete the pet that was created and updated in previous tests', async () => {
             let response = await petStoreCrudActions.deletePet(petId)
             expect(response?.status()).toBe(StatusCode.OK)

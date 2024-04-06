@@ -36,13 +36,13 @@ export interface ApiOptionalParams<T> {
 }
 
 
-export class ApiRequests {
+export class ApiClient {
     constructor(public apiRequestContext: APIRequestContext) {
         this.apiRequestContext = apiRequestContext
     }
 
     /**
-     * @description resuable code to add the authorization header is an  authorization is requiired to make the request
+     * @description resuable code to add the authorization header if an  authorization is requiired to make the request
      * @param headers 
      */
     private async addAuthorizationHeader(headers: { [key: string]: string }) {

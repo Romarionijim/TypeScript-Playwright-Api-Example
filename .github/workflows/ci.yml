@@ -12,10 +12,10 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     greps: ['@PET_STORE, @POKEMON_API']
+    strategy:
+      fail-fast: false
+      matrix:
+        greps: ['@PET_STORE_API, @POKEMON_API']
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -30,6 +30,6 @@ jobs:
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: playwright-report
+        name: playwright-report-${{ matrix.greps }}
         path: playwright-report/
         retention-days: 30

@@ -1,8 +1,8 @@
 import { APIRequestContext, APIResponse, expect } from "@playwright/test";
-import { ApiRequests, RequestMethods, StatusCode } from "../../apiRequests/ApiRequests";
+import { ApiClient, RequestMethods, StatusCode } from "../../apiClient/ApiClient";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 
-export class PokemonApi extends ApiRequests {
+export class PokemonApi extends ApiClient {
     private POKEMON_BASE_URL = ApplicationUrl.POKEMON_URL;
     private POKEMON_ENDPOINT = `${this.POKEMON_BASE_URL}/pokemon`;
 

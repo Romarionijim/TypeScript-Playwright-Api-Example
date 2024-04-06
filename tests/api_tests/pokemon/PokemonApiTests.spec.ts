@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { PokemonApi } from '../../../infra/api/entities/pokemon/PokemonApi'
-import { ApiRequests, StatusCode } from '../../../infra/api/apiRequests/ApiRequests'
+import { ApiClient, StatusCode } from '../../../infra/api/apiClient/ApiClient'
 import { IpokemonResults } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces'
 
 test.describe('Pokemon API CRUD tests', async () => {
@@ -12,13 +12,13 @@ test.describe('Pokemon API CRUD tests', async () => {
         pokemonApi = new PokemonApi(request);
     })
 
-    test('GET the pokemon resources @POKEMON_API', async () => {
+    test('GET the pokemon resources', { tag: ['@POKEMON_API'] }, async () => {
         await test.step('GET first 20 pokemon resources by default and validate initial response', async () => {
             let res = await pokemonApi.getPokemon();
             let jsonResponse = await res?.json()
             expect(res?.status()).toBe(StatusCode.OK)
             expect(jsonResponse).toEqual(expect.objectContaining({
-                count: 1292,
+                count: 1302,
                 next: "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
                 previous: null,
                 results: expect.any(Array)
@@ -27,16 +27,16 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-    test('get all pokemon resources @POKEMON_API', async () => {
+    test('get all pokemon resources', { tag: ['@POKEMON_API'] }, async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
             let response = await pokemonApi.getAllPokemonRecourses(limit, offset, { limitOffsetPagination: true })
             let responseLength = response.length
-            expect(responseLength).toBe(1292)
+            expect(responseLength).toBe(1302)
         })
     })
 
 
-    test('response keys type validation @POKEMON_API', async () => {
+    test('response keys type validation', { tag: ['@POKEMON_API'] }, async () => {
         await test.step('validate that each key in the results response object are equals to strings', async () => {
             let res = await pokemonApi.getPokemon()
             let resJson = await res?.json()
