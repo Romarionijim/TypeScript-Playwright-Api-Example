@@ -11,21 +11,11 @@ export class Users extends ApiClient {
         return response;
     }
 
-    private async getGender(gender: string) {
+    public async getGender(gender: string) {
         let response = await this.get(this.usersEnpoint)
         let responseObject = await response?.json()
-        let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
+        let genderFilter = responseObject.filter((el: any) => el.gender === gender)
         return genderFilter
-    }
-
-    public async getMaleUsers() {
-        let res = await this.getGender('male')
-        return res
-    }
-
-    public async getFemaleUsers() {
-        let res = await this.getGender('female')
-        return res
     }
 
     /**
@@ -34,8 +24,8 @@ export class Users extends ApiClient {
      */
     public async makeBothGendersEven() {
         let response: APIResponse | undefined
-        let maleUsers = await this.getMaleUsers();
-        let femaleUsers = await this.getFemaleUsers();
+        let maleUsers = await this.getGender('male');
+        let femaleUsers = await this.getGender('female');
         try {
             let differrence = Math.abs(maleUsers - femaleUsers)
             if (maleUsers === femaleUsers) {
@@ -63,7 +53,6 @@ export class Users extends ApiClient {
                     response = await this.post(this.usersEnpoint, maleData, { authoriaztionRequired: true })
                 }
             }
-
             return response;
         } catch (error) {
             throw new Error(`an error occured in makeBothGendersEven function: ${error}`)

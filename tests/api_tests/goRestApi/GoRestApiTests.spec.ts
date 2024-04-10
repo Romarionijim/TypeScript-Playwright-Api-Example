@@ -38,8 +38,8 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         await test.step('make an apir equest to make both male and female genders equal', async () => {
             let response = await users.makeBothGendersEven();
             expect(response?.status()).toBe(StatusCode.OK)
-            let maleGender = await users.getMaleUsers()
-            let femaleGender = await users.getFemaleUsers()
+            let maleGender = await users.getGender('male')
+            let femaleGender = await users.getGender('female')
             expect(maleGender.length).toEqual(femaleGender.length)
         })
     })
