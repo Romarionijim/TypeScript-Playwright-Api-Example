@@ -26,7 +26,7 @@ export interface ApiOptionalParams<T> {
     requestData?: { [key: string]: T },
     authoriaztionRequired?: boolean,
     isMultiPart?: boolean,
-    multipartObject?: { [key: string]: any },
+    multiPartData?: { [key: string]: any },
     paginateRequest?: boolean,
     pagePagination?: boolean,
     limitOffsetPagination?: boolean,
@@ -74,13 +74,13 @@ export class ApiClient {
                 response = await this.apiRequestContext.get(url, { headers, params: options?.queryParams })
                 break;
             case 'POST':
-                response = await this.apiRequestContext.post(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
+                response = await this.apiRequestContext.post(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
                 break;
             case 'PUT':
-                response = await this.apiRequestContext.put(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
+                response = await this.apiRequestContext.put(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
                 break;
             case 'PATCH':
-                response = await this.apiRequestContext.patch(url, { headers, data: options?.requestData, multipart: options?.multipartObject! })
+                response = await this.apiRequestContext.patch(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
                 break;
             case 'DELETE':
                 response = await this.apiRequestContext.delete(url)
@@ -145,32 +145,32 @@ export class ApiClient {
      * @description http request that abstracts the logic behind the scenes 
      */
     private async httpRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(method, url, { queryParams: options?.queryParams, requestData: options?.requestData, authoriaztionRequired: options?.authoriaztionRequired, isMultiPart: options?.isMultiPart, multipartObject: options?.multipartObject })
+        let response = await this.makeRequest(method, url, options)
         return response;
     }
 
     public async get<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.GET, url, { requestData: options?.queryParams, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, responseDataKey: options?.responseDataKey })
+        let response = await this.httpRequest(RequestMethods.GET, url, options)
         return response
     }
 
-    public async post<T>(url: string, data: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.POST, url, { isMultiPart: options?.isMultiPart, requestData: data, multipartObject: options?.multipartObject, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired })
+    public async post<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.httpRequest(RequestMethods.POST, url, options)
         return response
     }
 
-    public async put<T>(url: string, data: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.PUT, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
+    public async put<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.httpRequest(RequestMethods.PUT, url, options);
         return response
     }
 
-    public async patch<T>(url: string, data?: { [key: string]: T }, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.PATCH, url, { requestData: data, paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
+    public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.httpRequest(RequestMethods.PATCH, url, options);
         return response;
     }
 
     public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.httpRequest(RequestMethods.DELETE, url, { paginateRequest: options?.paginateRequest, limit: options?.limit, offset: options?.offset, pagePagination: options?.pagePagination, limitOffsetPagination: options?.limitOffsetPagination, authoriaztionRequired: options?.authoriaztionRequired });
+        let response = await this.httpRequest(RequestMethods.DELETE, url, options);
         return response;
     }
 }

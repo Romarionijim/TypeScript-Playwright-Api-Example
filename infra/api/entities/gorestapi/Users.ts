@@ -49,7 +49,7 @@ export class Users extends ApiClient {
                         gender: 'female',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, femaleData, { authoriaztionRequired: true })
+                    response = await this.post(this.usersEnpoint, { requestData: femaleData, authoriaztionRequired: true })
                 }
             } else {
                 for (let i = 0; i < differrence; i++) {
@@ -60,7 +60,7 @@ export class Users extends ApiClient {
                         gender: 'male',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, maleData, { authoriaztionRequired: true })
+                    response = await this.post(this.usersEnpoint, { requestData: maleData, authoriaztionRequired: true })
                 }
             }
 
@@ -125,11 +125,12 @@ export class Users extends ApiClient {
         let response: APIResponse | undefined
         try {
             for (let user of usersObject) {
-                let emailExtension = await this.extractEmailExtension(user.email)
+                let email = user.email
+                let emailExtension = await this.extractEmailExtension(email)
                 if (emailExtension && emailExtension !== 'co.il') {
-                    let newEmail = await this.replaceEmailExtension(user.email, '.co.il')
+                    let newEmail = await email.replace(emailExtension, 'co.il');
                     let newEmailProperty = { email: newEmail }
-                    response = await this.patch(`${this.usersEnpoint}/${user.id}`, newEmailProperty, { authoriaztionRequired: true })
+                    response = await this.patch(`${this.usersEnpoint}/${user.id}`, { requestData: newEmailProperty, authoriaztionRequired: true })
                 }
             }
             return response

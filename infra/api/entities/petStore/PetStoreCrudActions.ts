@@ -16,7 +16,7 @@ export class PetStoreCrudActions extends ApiClient {
     }
 
     public async createNewPet<T>(petData: { [key: string]: T }) {
-        let response = await this.post(this.petStorePetEndpoint, petData)
+        let response = await this.post(this.petStorePetEndpoint, { requestData: petData })
         return response;
     }
 
@@ -39,7 +39,7 @@ export class PetStoreCrudActions extends ApiClient {
     }
 
     public async updatePet<T>(updatedData: { [key: string]: T }) {
-        let response = await this.put(this.petStorePetEndpoint, updatedData)
+        let response = await this.put(this.petStorePetEndpoint, { requestData: updatedData })
         return response;
     }
 
@@ -47,5 +47,5 @@ export class PetStoreCrudActions extends ApiClient {
         let response = await this.delete(`${this.petStorePetEndpoint}/${petId}`)
         return response;
     }
-    
+
 }
