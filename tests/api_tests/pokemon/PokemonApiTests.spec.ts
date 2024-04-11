@@ -29,7 +29,7 @@ test.describe('Pokemon API CRUD tests', async () => {
 
     test('get all pokemon resources', { tag: ['@POKEMON_API'] }, async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
-            let response = await pokemonApi.getAllPokemonRecourses(limit, offset, { limitOffsetPagination: true })
+            let response = await pokemonApi.getAllPokemonRecourses(limit, offset)
             let responseLength = response.length
             expect(responseLength).toBe(1302)
         })

@@ -1,5 +1,5 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient, RequestMethods } from "../../apiClient/ApiClient";
+import { ApiClient, PaginationType, RequestMethods } from "../../apiClient/ApiClient";
 import Randomizer from "../../helpers/faker/Randomizer";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 
@@ -49,7 +49,7 @@ export class Users extends ApiClient {
                         gender: 'female',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, femaleData, { authoriaztionRequired: true })
+                    response = await this.post(this.usersEnpoint, { requestData: femaleData, authoriaztionRequired: true })
                 }
             } else {
                 for (let i = 0; i < differrence; i++) {
@@ -60,7 +60,7 @@ export class Users extends ApiClient {
                         gender: 'male',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, maleData, { authoriaztionRequired: true })
+                    response = await this.post(this.usersEnpoint, { requestData: maleData, authoriaztionRequired: true })
                 }
             }
 
@@ -96,7 +96,7 @@ export class Users extends ApiClient {
      * @returns 
      */
     public async getAllUsers(page: number) {
-        let response = await this.paginateRequest(RequestMethods.GET, this.usersEnpoint, { paginateRequest: true, pagePagination: true, pageNumber: page })
+        let response = await this.paginateHttpRequest(RequestMethods.GET, this.usersEnpoint, { paginateRequest: true, paginationType: PaginationType.PAGE_PAGINATION, pagePagination: true, pageNumber: page })
         return response;
     }
 
@@ -129,7 +129,7 @@ export class Users extends ApiClient {
                 if (emailExtension && emailExtension !== 'co.il') {
                     let newEmail = await this.replaceEmailExtension(user.email, '.co.il')
                     let newEmailProperty = { email: newEmail }
-                    response = await this.patch(`${this.usersEnpoint}/${user.id}`, newEmailProperty, { authoriaztionRequired: true })
+                    response = await this.patch(`${this.usersEnpoint}/${user.id}`, { requestData: newEmailProperty, authoriaztionRequired: true })
                 }
             }
             return response
