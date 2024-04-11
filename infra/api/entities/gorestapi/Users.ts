@@ -96,7 +96,7 @@ export class Users extends ApiClient {
      * @returns 
      */
     public async getAllUsers(page: number) {
-        let response = await this.paginateHttpRequest(RequestMethods.GET, this.usersEnpoint, { paginateRequest: true, paginationType: PaginationType.PAGE_PAGINATION, pagePagination: true, pageNumber: page })
+        let response = await this.paginateHttpRequest(RequestMethods.GET, this.usersEnpoint, PaginationType.PAGE_PAGINATION, { paginateRequest: true, pagePagination: true, pageNumber: page })
         return response;
     }
 

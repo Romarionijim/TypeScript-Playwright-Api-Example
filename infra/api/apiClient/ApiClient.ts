@@ -99,19 +99,19 @@ export class ApiClient {
     }
 
 
-    private async paginateBy<T>(paginationType: PaginationType, options?: ApiOptionalParams<T>): Promise<{ [key: string]: any }> {
-        let existingQueryParams = { ...options?.queryParams }
-        let newParams = {}
-        switch (paginationType) {
-            case PaginationType.PAGE_PAGINATION:
-                newParams = { ...existingQueryParams, 'page': options?.pageNumber }
-                break;
-            case PaginationType.OFFSET_PAGINATION:
-                newParams = { ...existingQueryParams, 'limit': options?.limit, 'offset': options?.offset }
-                break;
-        }
-        return newParams;
-    }
+    // private async paginateBy<T>(paginationType: PaginationType, options?: ApiOptionalParams<T>): Promise<{ [key: string]: any }> {
+    //     let existingQueryParams = { ...options?.queryParams }
+    //     let newParams = {}
+    //     switch (paginationType) {
+    //         case PaginationType.PAGE_PAGINATION:
+    //             newParams = { ...existingQueryParams, 'page': options?.pageNumber }
+    //             break;
+    //         case PaginationType.OFFSET_PAGINATION:
+    //             newParams = { ...existingQueryParams, 'limit': options?.limit, 'offset': options?.offset }
+    //             break;
+    //     }
+    //     return newParams;
+    // }
 
     /**
      * @description handle the response object by spreading it to an existing array if the response is already an array otherwise push directly
@@ -129,12 +129,9 @@ export class ApiClient {
     public async paginateRequest<T>(method: RequestMethods, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>): Promise<APIResponse[] | undefined> {
         let response: APIResponse | undefined
         let responses: APIResponse[] = []
+        let existingQueryParams = { ...options.queryParams }
         try {
             while (true) {
-                const queryParams = await this.paginateBy(pagintionType, options)
-                if (options.pagePagination && options.pageNumber !== undefined) {
-                    queryParams['page'] = options.pageNumber++
-                }
                 response = await this.makeRequest(method, url, options);
                 let responseObj = await response?.json();
                 if (!responseObj || responseObj.length === 0) {
@@ -150,14 +147,18 @@ export class ApiClient {
                 } else {
                     await this.handleResponseObject(responseObj, responses);
                 }
-                switch (options.paginationType) {
+                switch (pagintionType) {
                     case PaginationType.PAGE_PAGINATION:
                         if (options.pageNumber !== undefined) {
-                            options.pageNumber++;
+                            existingQueryParams['page'] = options.pageNumber
+                            options.pageNumber++
+
                         }
                         break;
                     case PaginationType.OFFSET_PAGINATION:
                         if (options.offset !== undefined && options.limit !== undefined) {
+                            existingQueryParams['limit'] = options.limit
+                            existingQueryParams['offset'] = options.offset
                             options.offset += options.limit;
                         }
                         break;
@@ -169,22 +170,22 @@ export class ApiClient {
         }
     }
 
-    private incrementPaginationParams<T>(options: ApiOptionalParams<T>, paginationType: PaginationType) {
-        switch (paginationType) {
-            case PaginationType.PAGE_PAGINATION:
-                if (options.pageNumber !== undefined) {
-                    options.pageNumber++;
-                }
-                break;
-            case PaginationType.OFFSET_PAGINATION:
-                if (options.offset !== undefined && options.limit !== undefined) {
-                    options.offset += options.limit;
-                }
-                break;
-        }
-    }
+    // private incrementPaginationParams<T>(paginationType: PaginationType, options: ApiOptionalParams<T>) {
+    //     switch (paginationType) {
+    //         case PaginationType.PAGE_PAGINATION:
+    //             if (options.pageNumber !== undefined) {
+    //                 options.pageNumber++;
+    //             }
+    //             break;
+    //         case PaginationType.OFFSET_PAGINATION:
+    //             if (options.offset !== undefined && options.limit !== undefined) {
+    //                 options.offset += options.limit;
+    //             }
+    //             break;
+    //     }
+    // }
 
-    public async paginateHttpRequest<T>(method: RequestMethods, url: string, options?: { paginationType?: PaginationType } & ApiOptionalParams<T>) {
+    public async paginateHttpRequest<T>(method: RequestMethods, url: string, paginationType: PaginationType, options?: ApiOptionalParams<T>) {
         if (options?.paginateRequest) {
             let responses = await this.paginateRequest(method, url, options.paginationType!, options);
             if (responses === undefined) {

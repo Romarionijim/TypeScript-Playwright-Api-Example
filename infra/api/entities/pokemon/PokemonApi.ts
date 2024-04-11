@@ -15,7 +15,7 @@ export class PokemonApi extends ApiClient {
      * @description get all pokemon recourses by using pagination - you can choose via page or limit and offset pagination mechanism
      */
     public async getAllPokemonRecourses(limit: number, offset: number) {
-        let responses = await this.paginateHttpRequest(RequestMethods.GET, this.POKEMON_ENDPOINT, { paginateRequest: true, limit: limit, offset: offset, paginationType: PaginationType.OFFSET_PAGINATION, responseKey: 'results' })
+        let responses = await this.paginateHttpRequest(RequestMethods.GET, this.POKEMON_ENDPOINT, PaginationType.OFFSET_PAGINATION, { paginateRequest: true, limit: limit, offset: offset, responseKey: 'results' })
         return responses;
     }
 }
