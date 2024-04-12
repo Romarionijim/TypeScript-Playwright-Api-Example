@@ -1,12 +1,12 @@
 export enum ApiEndpoints {
     //========================================
-    //--------Pet Store Endpoints-------------
+    //--------PET STORE endpoints-------------
     PET = 'pet',
     UPLOAD_IMAGE = 'uploadImage',
     //=======================================
-    //-----------pokemon endpoint------------
+    //-----------POKEMON endpoints------------
     POKEMON = 'pokemon',
     //=======================================
-    //-----------go rest api endpoints-------
-    GO_REST_API = '',
+    //-----------GO REST API endpoints-------
+    USERS_ENDPOINT = 'users',
 }

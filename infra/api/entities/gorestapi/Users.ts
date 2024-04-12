@@ -1,31 +1,22 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient, RequestMethods } from "../../apiClient/ApiClient";
+import { ApiClient, RequestMethods, StatusCode } from "../../apiClient/ApiClient";
 import Randomizer from "../../helpers/faker/Randomizer";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
+import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
 
 export class Users extends ApiClient {
-    private usersEnpoint = `${ApplicationUrl.GO_REST_API}/users`
+    private usersEnpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`
 
     public async getUsers() {
         let response = await this.get(this.usersEnpoint)
         return response;
     }
 
-    private async getGender(gender: string) {
+    public async getGender(gender: string) {
         let response = await this.get(this.usersEnpoint)
         let responseObject = await response?.json()
         let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
         return genderFilter
-    }
-
-    public async getMaleUsers() {
-        let res = await this.getGender('male')
-        return res
-    }
-
-    public async getFemaleUsers() {
-        let res = await this.getGender('female')
-        return res
     }
 
     /**
@@ -34,12 +25,12 @@ export class Users extends ApiClient {
      */
     public async makeBothGendersEven() {
         let response: APIResponse | undefined
-        let maleUsers = await this.getMaleUsers();
-        let femaleUsers = await this.getFemaleUsers();
+        let maleUsers = await this.getGender('male');
+        let femaleUsers = await this.getGender('female');
         try {
             let differrence = Math.abs(maleUsers - femaleUsers)
             if (maleUsers === femaleUsers) {
-                return response;
+                return;
             } else if (maleUsers > femaleUsers) {
                 for (let i = 0; i < differrence; i++) {
                     let femaleData = {
@@ -63,6 +54,8 @@ export class Users extends ApiClient {
                     response = await this.post(this.usersEnpoint, { requestData: maleData, authoriaztionRequired: true })
                 }
             }
+
+
 
             return response;
         } catch (error) {
@@ -149,16 +142,5 @@ export class Users extends ApiClient {
             extensions.push(extension!)
         }
         return extensions
-    }
-
-    private async replaceEmailExtension(email: string, newExtension: string) {
-        let emailWithoutDomain = email.substring(0, email.lastIndexOf('@'))
-        let emailDomain = email.split('@').pop()
-        let domainWithoutExtension = emailDomain?.substring(0, emailDomain.lastIndexOf('.'))
-        let emailExtension = emailDomain?.substring(emailDomain.lastIndexOf('.'))
-        let extensionSwap = emailExtension?.replace(emailExtension, newExtension)
-        let newEmail = `${emailWithoutDomain}@${domainWithoutExtension}${extensionSwap}`
-        return newEmail
-
     }
 }

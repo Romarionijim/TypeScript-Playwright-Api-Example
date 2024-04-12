@@ -34,13 +34,12 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     /**
      * @description there is a bug with this endpoint - it does not authorize any generated toke=n whatsoever
      */
-    test.skip('gender equality', { tag: ['@GO_REST_API'] }, async () => {
-        await test.step('make an apir equest to make both male and female genders equal', async () => {
-            let response = await users.makeBothGendersEven();
-            expect(response?.status()).toBe(StatusCode.OK)
-            let maleGender = await users.getMaleUsers()
-            let femaleGender = await users.getFemaleUsers()
-            expect(maleGender.length).toEqual(femaleGender.length)
+    test('gender equality', { tag: ['@GO_REST_API'] }, async () => {
+        await test.step('make an api request to make both male and female genders equal', async () => {
+            await users.makeBothGendersEven();
+            let maleGender = await users.getGender('male')
+            let femaleGender = await users.getGender('female')
+            expect(maleGender).toEqual(femaleGender)
         })
     })
 
@@ -48,6 +47,8 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         await test.step('extract extension of each user email and replace each extension with co.il', async () => {
             let response = await users.replaceEmailExtensionForUsers()
             expect(response?.status()).toBe(StatusCode.OK)
+        })
+        await test.step('validate previous extenstions were replaced with co.il extension', async () => {
             let actualEmailExtensions = await users.getCurrentUserEmailExtension()
             let expectedExtensions = new Array(actualEmailExtensions.length).fill('.co.il')
             expect(actualEmailExtensions).toEqual(expectedExtensions)

@@ -1,10 +1,11 @@
 import { APIRequestContext, APIResponse, expect } from "@playwright/test";
 import { ApiClient, RequestMethods, StatusCode } from "../../apiClient/ApiClient";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
+import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
 
 export class PokemonApi extends ApiClient {
     private POKEMON_BASE_URL = ApplicationUrl.POKEMON_URL;
-    private POKEMON_ENDPOINT = `${this.POKEMON_BASE_URL}/pokemon`;
+    private POKEMON_ENDPOINT = `${this.POKEMON_BASE_URL}/${ApiEndpoints.POKEMON}`;
 
     public async getPokemon() {
         let response = await this.get(this.POKEMON_ENDPOINT)
