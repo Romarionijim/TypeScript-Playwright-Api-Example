@@ -1,5 +1,5 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient, RequestMethods, StatusCode } from "../../apiClient/ApiClient";
+import { ApiClient, PaginationType, RequestMethod } from "../../apiClient/ApiClient";
 import Randomizer from "../../helpers/faker/Randomizer";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
@@ -89,7 +89,7 @@ export class Users extends ApiClient {
      * @returns 
      */
     public async getAllUsers(page: number) {
-        let response = await this.paginateRequest(RequestMethods.GET, this.usersEnpoint, { paginateRequest: true, pagePagination: true, pageNumber: page })
+        let response = await this.paginateRequest(RequestMethod.GET, this.usersEnpoint, PaginationType.PAGE_PAGINATION, { paginateRequest: true, pagePagination: true, pageNumber: page })
         return response;
     }
 
