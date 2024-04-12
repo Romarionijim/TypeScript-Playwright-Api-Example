@@ -1,6 +1,7 @@
+import { ur } from '@faker-js/faker';
 import { APIRequestContext, APIResponse } from '@playwright/test';
 
-export enum RequestMethods {
+export enum RequestMethod {
     GET = 'GET',
     POST = 'POST',
     PUT = 'PUT',
@@ -65,7 +66,7 @@ export class ApiClient {
      * @param options 
      * @returns 
      */
-    private async makeRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse | undefined> {
+    private async makeRequest<T>(method: RequestMethod, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse | undefined> {
         let response: APIResponse | undefined
         let headers: Record<string, string> = {
             'Accept': '*/*'
@@ -99,20 +100,41 @@ export class ApiClient {
     }
 
 
-    // private async paginateBy<T>(paginationType: PaginationType, options?: ApiOptionalParams<T>): Promise<{ [key: string]: any }> {
-    //     let existingQueryParams = { ...options?.queryParams }
-    //     let newParams = {}
-    //     switch (paginationType) {
-    //         case PaginationType.PAGE_PAGINATION:
-    //             newParams = { ...existingQueryParams, 'page': options?.pageNumber }
-    //             break;
-    //         case PaginationType.OFFSET_PAGINATION:
-    //             newParams = { ...existingQueryParams, 'limit': options?.limit, 'offset': options?.offset }
-    //             break;
-    //     }
-    //     return newParams;
-    // }
+    private async paginateBy<T>(method: RequestMethod, url: string, paginationType: PaginationType, options?: ApiOptionalParams<T>) {
+        let response: APIResponse | undefined;
+        let responses: APIResponse[] = [];
+        let queryParams = options?.queryParams ? { ...options.queryParams } : {};
 
+        while (true) {
+            if (paginationType === PaginationType.PAGE_PAGINATION && options?.pageNumber !== undefined) {
+                queryParams = { ...queryParams, 'page': options.pageNumber };
+            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options?.limit !== undefined && options.offset !== undefined) {
+                queryParams = { ...queryParams, 'limit': options.limit, 'offset': options.offset };
+            }
+            response = await this.makeRequest(method, url, { ...options, queryParams });
+            let responseObj = await response?.json();
+
+            if (!responseObj || responseObj.length === 0) {
+                break;
+            }
+            if (options?.responseKey) {
+                let responseKey = responseObj[options.responseKey];
+                if (responseKey.length === 0) {
+                    break;
+                }
+                await this.handleResponseObject(responses, responseKey);
+            } else {
+                await this.handleResponseObject(responses, responseObj);
+            }
+            if (paginationType === PaginationType.PAGE_PAGINATION && options?.pageNumber !== undefined) {
+                options.pageNumber++;
+            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options?.offset !== undefined && options.limit !== undefined) {
+                options.offset += options.limit;
+            }
+        }
+
+        return responses;
+    }
     /**
      * @description handle the response object by spreading it to an existing array if the response is already an array otherwise push directly
      * to the array.
@@ -126,104 +148,38 @@ export class ApiClient {
         }
     }
 
-    public async paginateRequest<T>(method: RequestMethods, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>): Promise<APIResponse[] | undefined> {
-        let response: APIResponse | undefined
-        let responses: APIResponse[] = []
-        let existingQueryParams = { ...options.queryParams }
-        try {
-            while (true) {
-                response = await this.makeRequest(method, url, options);
-                let responseObj = await response?.json();
-                if (!responseObj || responseObj.length === 0) {
-                    break;
-                }
-                if (options?.responseKey) {
-                    let responseKey = responseObj[options.responseKey]
-                    if (responseKey.length === 0) {
-                        break;
-                    }
-                    await this.handleResponseObject(responseKey, responses);
-
-                } else {
-                    await this.handleResponseObject(responseObj, responses);
-                }
-                switch (pagintionType) {
-                    case PaginationType.PAGE_PAGINATION:
-                        if (options.pageNumber !== undefined) {
-                            existingQueryParams['page'] = options.pageNumber
-                            options.pageNumber++
-
-                        }
-                        break;
-                    case PaginationType.OFFSET_PAGINATION:
-                        if (options.offset !== undefined && options.limit !== undefined) {
-                            existingQueryParams['limit'] = options.limit
-                            existingQueryParams['offset'] = options.offset
-                            options.offset += options.limit;
-                        }
-                        break;
-                }
-            }
-            return responses;
-        } catch (error) {
-            throw new Error(`something went wrong in one of the paginateRequest function conditions - please refer to paginateRequest function `)
-        }
+    public async paginateRequest<T>(method: RequestMethod, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>) {
+        let response = await this.paginateBy(method, url, pagintionType, options);
+        return response;
     }
 
-    // private incrementPaginationParams<T>(paginationType: PaginationType, options: ApiOptionalParams<T>) {
-    //     switch (paginationType) {
-    //         case PaginationType.PAGE_PAGINATION:
-    //             if (options.pageNumber !== undefined) {
-    //                 options.pageNumber++;
-    //             }
-    //             break;
-    //         case PaginationType.OFFSET_PAGINATION:
-    //             if (options.offset !== undefined && options.limit !== undefined) {
-    //                 options.offset += options.limit;
-    //             }
-    //             break;
-    //     }
-    // }
-
-    public async paginateHttpRequest<T>(method: RequestMethods, url: string, paginationType: PaginationType, options?: ApiOptionalParams<T>) {
-        if (options?.paginateRequest) {
-            let responses = await this.paginateRequest(method, url, options.paginationType!, options);
-            if (responses === undefined) {
-                throw new Error('the response object is udnefined in the paginateHttpRequest ');
-            }
-            return responses;
-        } else {
-            throw new Error('pagination options may not have been provided in the makePaginatedHttpRequest');
-        }
-    }
-
-    private async makeHttpRequest<T>(method: RequestMethods, url: string, options?: ApiOptionalParams<T>) {
+    private async makeHttpRequest<T>(method: RequestMethod, url: string, options?: ApiOptionalParams<T>) {
         let response = await this.makeRequest(method, url, options)
         return response;
     }
 
     public async get<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethods.GET, url, options)
+        let response = await this.makeHttpRequest(RequestMethod.GET, url, options)
         return response;
     }
 
     public async post<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethods.POST, url, options)
+        let response = await this.makeHttpRequest(RequestMethod.POST, url, options)
         return response;
     }
 
     public async put<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethods.PUT, url, options)
+        let response = await this.makeHttpRequest(RequestMethod.PUT, url, options)
         return response;
     }
 
     public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethods.PATCH, url, options)
+        let response = await this.makeHttpRequest(RequestMethod.PATCH, url, options)
         return response;
     }
 
     public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethods.DELETE, url, options)
+        let response = await this.makeHttpRequest(RequestMethod.DELETE, url, options)
         return response;
     }
 }
