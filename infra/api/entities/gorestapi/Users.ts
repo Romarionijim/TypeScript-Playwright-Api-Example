@@ -15,7 +15,7 @@ export class Users extends ApiClient {
     public async getGender(gender: string) {
         let response = await this.get(this.usersEnpoint)
         let responseObject = await response?.json()
-        let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
+        let genderFilter = responseObject.filter((el: { gender: string }) => el.gender === gender).length
         return genderFilter
     }
 

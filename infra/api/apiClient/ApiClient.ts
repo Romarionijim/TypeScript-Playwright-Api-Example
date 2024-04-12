@@ -1,4 +1,3 @@
-import { ur } from '@faker-js/faker';
 import { APIRequestContext, APIResponse } from '@playwright/test';
 
 export enum RequestMethod {
@@ -183,5 +182,15 @@ export class ApiClient {
     public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
         let response = await this.makeHttpRequest(RequestMethod.DELETE, url, options)
         return response;
+    }
+
+    public async makeApiRequest<T>(method: RequestMethod, url: string, options?: { paginationType?: PaginationType } & ApiOptionalParams<T>) {
+        if (options?.paginateRequest && options.paginationType !== undefined) {
+            let responses = await this.paginateRequest(method, url, options.paginationType, options)
+            return responses
+        } else {
+            let response = await this.makeRequest(method, url, options);
+            return response;
+        }
     }
 }

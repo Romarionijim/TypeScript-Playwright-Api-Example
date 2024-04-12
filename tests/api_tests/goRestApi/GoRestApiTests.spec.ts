@@ -11,6 +11,15 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         users = new Users(request);
     })
 
+
+    test.skip('get all users', { tag: ['@GO_REST_API'] }, async () => {
+        await test.step('get all users from all pages from users endpoint', async () => {
+            let res = await users.getAllUsers(pageNumber)
+            expect(res.every(res => res.status())).toBe(StatusCode.OK)
+        })
+    })
+
+
     test('sanity check', { tag: ['@GO_REST_API'] }, async () => {
         await test.step('get users endpoint - validate status, body type of obejct properties and default length of the response', async () => {
             let response = await users.getUsers();
