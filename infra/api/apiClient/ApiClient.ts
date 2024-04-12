@@ -104,7 +104,6 @@ export class ApiClient {
         let response: APIResponse | undefined;
         let responses: APIResponse[] = [];
         let queryParams = options?.queryParams ? { ...options.queryParams } : {};
-
         while (true) {
             if (paginationType === PaginationType.PAGE_PAGINATION && options?.pageNumber !== undefined) {
                 queryParams = { ...queryParams, 'page': options.pageNumber };
@@ -113,7 +112,6 @@ export class ApiClient {
             }
             response = await this.makeRequest(method, url, { ...options, queryParams });
             let responseObj = await response?.json();
-
             if (!responseObj || responseObj.length === 0) {
                 break;
             }
@@ -149,8 +147,12 @@ export class ApiClient {
     }
 
     public async paginateRequest<T>(method: RequestMethod, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>) {
-        let response = await this.paginateBy(method, url, pagintionType, options);
-        return response;
+        try {
+            let response = await this.paginateBy(method, url, pagintionType, options);
+            return response;
+        } catch (error) {
+            throw new Error(`an error occured in the paginate request function: ${error}`)
+        }
     }
 
     private async makeHttpRequest<T>(method: RequestMethod, url: string, options?: ApiOptionalParams<T>) {
