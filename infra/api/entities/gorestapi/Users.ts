@@ -54,9 +54,6 @@ export class Users extends ApiClient {
                     response = await this.post(this.usersEnpoint, { requestData: maleData, authoriaztionRequired: true })
                 }
             }
-
-
-
             return response;
         } catch (error) {
             throw new Error(`an error occured in makeBothGendersEven function: ${error}`)
