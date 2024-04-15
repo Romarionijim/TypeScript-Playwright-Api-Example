@@ -155,33 +155,28 @@ export class ApiClient {
         }
     }
 
-    private async makeHttpRequest<T>(method: RequestMethod, url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(method, url, options)
-        return response;
-    }
-
     public async get<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethod.GET, url, options)
+        let response = await this.makeRequest(RequestMethod.GET, url, options)
         return response;
     }
 
     public async post<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethod.POST, url, options)
+        let response = await this.makeRequest(RequestMethod.POST, url, options)
         return response;
     }
 
     public async put<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethod.PUT, url, options)
+        let response = await this.makeRequest(RequestMethod.PUT, url, options)
         return response;
     }
 
     public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethod.PATCH, url, options)
+        let response = await this.makeRequest(RequestMethod.PATCH, url, options)
         return response;
     }
 
     public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeHttpRequest(RequestMethod.DELETE, url, options)
+        let response = await this.makeRequest(RequestMethod.DELETE, url, options)
         return response;
     }
 }
