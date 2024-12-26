@@ -56,7 +56,7 @@ export class ApiClient {
        * @param headers 
        */
     private async addAuthorizationHeader(headers: { [key: string]: string }) {
-        headers['Authorization'] = `Bearer ${process.env.API_TOKEN}`
+        headers['Authorization'] = `Bearer ${process.env.API_TOKEN}`;
     }
 
     /**
@@ -96,7 +96,7 @@ export class ApiClient {
                 response = await this.request.delete(url)
                 break;
         }
-        return response
+        return response;
     }
 
 

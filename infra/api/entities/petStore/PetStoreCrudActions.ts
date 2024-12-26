@@ -12,12 +12,12 @@ export class PetStoreCrudActions extends ApiClient {
 
     public async getPet(petId: number): Promise<APIResponse | undefined> {
         let response = await this.get(`${this.petStorePetEndpoint}/${petId}`)
-        return response
+        return response;
     }
 
     public async createNewPet<T>(petData: { [key: string]: T }) {
         let response = await this.post(this.petStorePetEndpoint, { requestData: petData })
-        return response;
+       return response;
     }
 
     /**
