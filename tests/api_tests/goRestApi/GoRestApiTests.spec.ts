@@ -1,7 +1,7 @@
 import { test, request, expect } from '@playwright/test'
-import { StatusCode } from '../../../infra/api/apiClient/ApiClient';
-import { IUser } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
+import { IUser } from '../../../infra/api/helpers/types/api-types';
 import { Users } from '../../../infra/api/entities/gorestapi/Users';
+import { StatusCode } from '../../../infra/api/helpers/types/api-request-types';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
     let users: Users;

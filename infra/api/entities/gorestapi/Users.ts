@@ -1,19 +1,21 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient, PaginationType, RequestMethod } from "../../apiClient/ApiClient";
+import { ApiClient } from "../../apiClient/ApiClient";
 import Randomizer from "../../helpers/faker/Randomizer";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
+import { RequestMethod } from "../../helpers/types/api-request-types";
+import { PaginationType } from "../../helpers/types/api-types";
 
 export class Users extends ApiClient {
-    private usersEnpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`
+    private usersEndpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`
 
     public async getUsers() {
-        let response = await this.get(this.usersEnpoint)
+        let response = await this.get(this.usersEndpoint)
         return response;
     }
 
     public async getGender(gender: string) {
-        let response = await this.get(this.usersEnpoint)
+        let response = await this.get(this.usersEndpoint)
         let responseObject = await response?.json()
         let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
         return genderFilter
@@ -28,11 +30,11 @@ export class Users extends ApiClient {
         let maleUsers = await this.getGender('male');
         let femaleUsers = await this.getGender('female');
         try {
-            let differrence = Math.abs(maleUsers - femaleUsers)
+            let difference = Math.abs(maleUsers - femaleUsers)
             if (maleUsers === femaleUsers) {
                 return;
             } else if (maleUsers > femaleUsers) {
-                for (let i = 0; i < differrence; i++) {
+                for (let i = 0; i < difference; i++) {
                     let femaleData = {
                         id: Randomizer.getRandomNumber(),
                         name: Randomizer.getRandomFemaleFirstName(),
@@ -40,10 +42,10 @@ export class Users extends ApiClient {
                         gender: 'female',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, { requestData: femaleData, authoriaztionRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: femaleData, isAuthorizationRequired: true })
                 }
             } else {
-                for (let i = 0; i < differrence; i++) {
+                for (let i = 0; i < difference; i++) {
                     let maleData = {
                         id: Randomizer.getRandomNumber(),
                         name: Randomizer.getRandomMaleFirstName(),
@@ -51,20 +53,20 @@ export class Users extends ApiClient {
                         gender: 'male',
                         status: 'active',
                     }
-                    response = await this.post(this.usersEnpoint, { requestData: maleData, authoriaztionRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: maleData, isAuthorizationRequired: true })
                 }
             }
             return response;
         } catch (error) {
-            throw new Error(`an error occured in makeBothGendersEven function: ${error}`)
+            throw new Error(`an error occurred in makeBothGendersEven function: ${error}`)
         }
     }
 
     private async getUserStatus(status: string) {
-        let users = await this.get(this.usersEnpoint)
+        let users = await this.get(this.usersEndpoint)
         let usersJsonObject = await users?.json()
-        let inactiveUsesrs = usersJsonObject.filter((user: { status: string; }) => user.status === status)
-        return inactiveUsesrs
+        let inactiveUsers = usersJsonObject.filter((user: { status: string; }) => user.status === status)
+        return inactiveUsers
     }
 
     public async getInActiveUsers() {
@@ -76,7 +78,7 @@ export class Users extends ApiClient {
         let response: APIResponse | undefined
         let inActiveUsers = await this.getInActiveUsers()
         for (let user of inActiveUsers) {
-            response = await this.delete(`${this.usersEnpoint}/${user.id}`, { authoriaztionRequired: true })
+            response = await this.delete(`${this.usersEndpoint}/${user.id}`, { isAuthorizationRequired: true })
         }
         return response;
     }
@@ -86,7 +88,16 @@ export class Users extends ApiClient {
      * @returns 
      */
     public async getAllUsers(page: number) {
-        let response = await this.paginateRequest(RequestMethod.GET, this.usersEnpoint, PaginationType.PAGE_PAGINATION, { paginateRequest: true, pagePagination: true, pageNumber: page })
+        let response = await this.paginateRequest(
+            RequestMethod.GET,
+            this.usersEndpoint,
+            PaginationType.PAGE_PAGINATION,
+            {
+                paginateRequest: true,
+                pagePagination: true,
+                pageNumber: page
+            }
+        )
         return response;
     }
 
@@ -120,7 +131,7 @@ export class Users extends ApiClient {
                 if (emailExtension && emailExtension !== 'co.il') {
                     let newEmail = await email.replace(emailExtension, 'co.il');
                     let newEmailProperty = { email: newEmail }
-                    response = await this.patch(`${this.usersEnpoint}/${user.id}`, { requestData: newEmailProperty, authoriaztionRequired: true })
+                    response = await this.patch(`${this.usersEndpoint}/${user.id}`, { requestData: newEmailProperty, isAuthorizationRequired: true })
                 }
             }
             return response

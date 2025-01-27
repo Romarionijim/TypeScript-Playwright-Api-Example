@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { PetStoreCrudActions } from '../../../infra/api/entities/petStore/PetStoreCrudActions'
 import { STATUS_CODES } from 'http';
-import { StatusCode } from '../../../infra/api/apiClient/ApiClient';
-import { Ipet } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
+import { Ipet } from '../../../infra/api/helpers/types/api-types';
 import Randomizer from '../../../infra/api/helpers/faker/Randomizer';
+import { StatusCode } from '../../../infra/api/helpers/types/api-request-types';
 
 test.describe.serial('CRUD API tests for the Pet Store API', async () => {
     let petStoreCrudActions: PetStoreCrudActions;

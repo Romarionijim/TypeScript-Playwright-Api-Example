@@ -1,62 +1,44 @@
-import { ur } from '@faker-js/faker';
 import { APIRequestContext, APIResponse } from '@playwright/test';
-
-export enum RequestMethod {
-    GET = 'GET',
-    POST = 'POST',
-    PUT = 'PUT',
-    PATCH = 'PATCH',
-    DELETE = 'DELETE',
-}
-
-export enum StatusCode {
-    OK = 200,
-    CREATED = 201,
-    NO_CONTENT = 204,
-    BAD_REQUEST = 400,
-    UNAUTHORIZED = 401,
-    FORBIDDEN = 403,
-    NOT_FOUND = 404,
-    SERVER_ERROR = 500,
-}
-
-export enum PaginationType {
-    PAGE_PAGINATION = 'page',
-    OFFSET_PAGINATION = 'offset',
-    CURSOR_PAGINATION = 'cursor',
-}
-
-
-export interface ApiOptionalParams<T> {
-    responseDataKey?: string,
-    queryParams?: { [key: string]: any },
-    requestData?: { [key: string]: T },
-    authoriaztionRequired?: boolean,
-    isMultiPart?: boolean,
-    multiPartData?: { [key: string]: any },
-    paginateRequest?: boolean,
-    pagePagination?: boolean,
-    limitOffsetPagination?: boolean,
-    pageNumber?: number,
-    limit?: number,
-    offset?: number,
-    cursor?: boolean,
-    cursorKey?: string,
-    paginationType?: PaginationType,
-    responseKey?: string,
-}
+import { ApiOptionalParams, PaginationType, RequestOptions } from '../helpers/types/api-types';
+import { RequestMethod } from '../helpers/types/api-request-types';
 
 export class ApiClient {
     constructor(public request: APIRequestContext) {
         this.request = request;
     }
+    
+    public async get<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.makeRequest(RequestMethod.GET, url, options)
+        return response;
+    }
 
-    /**
-       * @description resuable code to add the authorization header if an  authorization is requiired to make the request
-       * @param headers 
-       */
-    private async addAuthorizationHeader(headers: { [key: string]: string }) {
-        headers['Authorization'] = `Bearer ${process.env.API_TOKEN}`;
+    public async post<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.makeRequest(RequestMethod.POST, url, options)
+        return response;
+    }
+
+    public async put<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.makeRequest(RequestMethod.PUT, url, options)
+        return response;
+    }
+
+    public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.makeRequest(RequestMethod.PATCH, url, options)
+        return response;
+    }
+
+    public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
+        let response = await this.makeRequest(RequestMethod.DELETE, url, options)
+        return response;
+    }
+
+    public async paginateRequest<T>(method: RequestMethod, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>) {
+        try {
+            let response = await this.paginateBy(method, url, pagintionType, options);
+            return response;
+        } catch (error) {
+            throw new Error(`an error occurred in the paginate request function: ${error}`)
+        }
     }
 
     /**
@@ -66,7 +48,11 @@ export class ApiClient {
      * @param options 
      * @returns 
      */
-    private async makeRequest<T>(method: RequestMethod, url: string, options?: ApiOptionalParams<T>): Promise<APIResponse | undefined> {
+    private async makeRequest<T>(
+        method: RequestMethod,
+        url: string,
+        options?: ApiOptionalParams<T>
+    ): Promise<APIResponse | undefined> {
         let response: APIResponse | undefined
         let headers: Record<string, string> = {
             'Accept': '*/*'
@@ -76,7 +62,7 @@ export class ApiClient {
         } else {
             headers["Content-Type"] = 'application/json'
         }
-        if (options?.authoriaztionRequired) {
+        if (options?.isAuthorizationRequired) {
             await this.addAuthorizationHeader(headers)
         }
         switch (method.valueOf()) {
@@ -99,8 +85,20 @@ export class ApiClient {
         return response;
     }
 
+    /**
+     * @description resuable code to add the authorization header if an  authorization is requiired to make the request
+     * @param headers 
+     */
+    private async addAuthorizationHeader(headers: { [key: string]: string }) {
+        headers['Authorization'] = `Bearer ${process.env.API_TOKEN}`;
+    }
 
-    private async paginateBy<T>(method: RequestMethod, url: string, paginationType: PaginationType, options?: ApiOptionalParams<T>) {
+    private async paginateBy<T>(
+        method: RequestMethod,
+        url: string,
+        paginationType: PaginationType,
+        options?: ApiOptionalParams<T>
+    ) {
         let response: APIResponse | undefined;
         let responses: APIResponse[] = [];
         let queryParams = options?.queryParams ? { ...options.queryParams } : {};
@@ -144,39 +142,5 @@ export class ApiClient {
         } else {
             responses.push(responseObj);
         }
-    }
-
-    public async paginateRequest<T>(method: RequestMethod, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>) {
-        try {
-            let response = await this.paginateBy(method, url, pagintionType, options);
-            return response;
-        } catch (error) {
-            throw new Error(`an error occured in the paginate request function: ${error}`)
-        }
-    }
-
-    public async get<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(RequestMethod.GET, url, options)
-        return response;
-    }
-
-    public async post<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(RequestMethod.POST, url, options)
-        return response;
-    }
-
-    public async put<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(RequestMethod.PUT, url, options)
-        return response;
-    }
-
-    public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(RequestMethod.PATCH, url, options)
-        return response;
-    }
-
-    public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
-        let response = await this.makeRequest(RequestMethod.DELETE, url, options)
-        return response;
     }
 }
