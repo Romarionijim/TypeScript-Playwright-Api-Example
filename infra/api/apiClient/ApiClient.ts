@@ -32,9 +32,9 @@ export class ApiClient {
         return response;
     }
 
-    public async paginateRequest<T>(method: RequestMethod, url: string, pagintionType: PaginationType, options: ApiOptionalParams<T>) {
+    public async paginateRequest<T>(method: RequestMethod, url: string, paginationType: PaginationType, options: ApiOptionalParams<T>) {
         try {
-            let response = await this.paginateBy(method, url, pagintionType, options);
+            let response = await this.paginateBy(method, url, paginationType, options);
             return response;
         } catch (error) {
             throw new Error(`an error occurred in the paginate request function: ${error}`)
@@ -86,7 +86,7 @@ export class ApiClient {
     }
 
     /**
-     * @description resuable code to add the authorization header if an  authorization is requiired to make the request
+     * @description reusable code to add the authorization header if an  authorization is required to make the request
      * @param headers 
      */
     private async addAuthorizationHeader(headers: { [key: string]: string }) {
