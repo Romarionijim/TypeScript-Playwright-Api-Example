@@ -41,7 +41,7 @@ export interface IPagination {
     paginationType?: PaginationType,
 }
 
-export interface RequestOptions<T> {
+export interface IRequestOptions<T> {
     queryParams?: { [key: string]: any },
     requestData?: { [key: string]: T },
     isAuthorizationRequired?: boolean,
@@ -49,9 +49,9 @@ export interface RequestOptions<T> {
     multiPartData?: { [key: string]: any },
 }
 
-export interface ResponseOptions {
+export interface IResponseOptions {
     responseDataKey?: string,
     responseKey?: string,
 }
 
-export type ApiOptionalParams<T> = RequestOptions<T> & ResponseOptions & IPagination
+export type ApiOptionalParams<T> = IRequestOptions<T> & IResponseOptions & IPagination
