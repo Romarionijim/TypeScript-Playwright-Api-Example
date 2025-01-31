@@ -3,36 +3,42 @@ import { ApiOptionalParams, PaginationType, IRequestOptions } from '../helpers/t
 import { RequestMethod } from '../helpers/types/api-request-types';
 
 export class ApiClient {
+
     constructor(public request: APIRequestContext) {
         this.request = request;
     }
-    
-    public async get<T>(url: string, options?: ApiOptionalParams<T>) {
+
+    public async get<T>(url: string, options: ApiOptionalParams<T> = {}) {
         let response = await this.makeRequest(RequestMethod.GET, url, options)
         return response;
     }
 
-    public async post<T>(url: string, options?: ApiOptionalParams<T>) {
+    public async post<T>(url: string, options: ApiOptionalParams<T> = {}) {
         let response = await this.makeRequest(RequestMethod.POST, url, options)
         return response;
     }
 
-    public async put<T>(url: string, options?: ApiOptionalParams<T>) {
+    public async put<T>(url: string, options: ApiOptionalParams<T> = {}) {
         let response = await this.makeRequest(RequestMethod.PUT, url, options)
         return response;
     }
 
-    public async patch<T>(url: string, options?: ApiOptionalParams<T>) {
+    public async patch<T>(url: string, options: ApiOptionalParams<T> = {}) {
         let response = await this.makeRequest(RequestMethod.PATCH, url, options)
         return response;
     }
 
-    public async delete<T>(url: string, options?: ApiOptionalParams<T>) {
+    public async delete<T>(url: string, options: ApiOptionalParams<T> = {}) {
         let response = await this.makeRequest(RequestMethod.DELETE, url, options)
         return response;
     }
 
-    public async paginateRequest<T>(method: RequestMethod, url: string, paginationType: PaginationType, options: ApiOptionalParams<T>) {
+    public async paginateRequest<T>(
+        method: RequestMethod,
+        url: string,
+        paginationType: PaginationType,
+        options: ApiOptionalParams<T>
+    ) {
         try {
             let response = await this.paginateBy(method, url, paginationType, options);
             return response;
@@ -51,32 +57,31 @@ export class ApiClient {
     private async makeRequest<T>(
         method: RequestMethod,
         url: string,
-        options?: ApiOptionalParams<T>
+        options: ApiOptionalParams<T> = {}
     ): Promise<APIResponse | undefined> {
         let response: APIResponse | undefined
         let headers: Record<string, string> = {
+            'Content-Type': 'application/json',
             'Accept': '*/*'
         }
         if (options?.isMultiPart) {
             headers["Content-Type"] = 'multipart/form-data'
-        } else {
-            headers["Content-Type"] = 'application/json'
-        }
-        if (options?.isAuthorizationRequired) {
+        } 
+        if (options?.isAuthorizationRequired && method !== RequestMethod.GET) {
             await this.addAuthorizationHeader(headers)
         }
         switch (method.valueOf()) {
             case 'GET':
-                response = await this.request.get(url, { headers, params: options?.queryParams })
+                response = await this.request.get(url, { headers, params: options.queryParams })
                 break;
             case 'POST':
-                response = await this.request.post(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
+                response = await this.request.post(url, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'PUT':
-                response = await this.request.put(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
+                response = await this.request.put(url, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'PATCH':
-                response = await this.request.patch(url, { headers, data: options?.requestData, multipart: options?.multiPartData! })
+                response = await this.request.patch(url, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'DELETE':
                 response = await this.request.delete(url)
@@ -97,15 +102,15 @@ export class ApiClient {
         method: RequestMethod,
         url: string,
         paginationType: PaginationType,
-        options?: ApiOptionalParams<T>
+        options: ApiOptionalParams<T> = {}
     ) {
         let response: APIResponse | undefined;
         let responses: APIResponse[] = [];
-        let queryParams = options?.queryParams ? { ...options.queryParams } : {};
+        let queryParams = options.queryParams ? { ...options.queryParams } : {};
         while (true) {
-            if (paginationType === PaginationType.PAGE_PAGINATION && options?.pageNumber !== undefined) {
+            if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
                 queryParams = { ...queryParams, 'page': options.pageNumber };
-            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options?.limit !== undefined && options.offset !== undefined) {
+            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.limit !== undefined && options.offset !== undefined) {
                 queryParams = { ...queryParams, 'limit': options.limit, 'offset': options.offset };
             }
             response = await this.makeRequest(method, url, { ...options, queryParams });
@@ -122,9 +127,9 @@ export class ApiClient {
             } else {
                 await this.handleResponseObject(responses, responseObj);
             }
-            if (paginationType === PaginationType.PAGE_PAGINATION && options?.pageNumber !== undefined) {
+            if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
                 options.pageNumber++;
-            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options?.offset !== undefined && options.limit !== undefined) {
+            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.offset !== undefined && options.limit !== undefined) {
                 options.offset += options.limit;
             }
         }
