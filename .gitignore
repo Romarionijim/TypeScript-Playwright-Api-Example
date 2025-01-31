@@ -9,3 +9,4 @@ main.ts
 .ide
 .vscode
 vscode
+.early.coverage
