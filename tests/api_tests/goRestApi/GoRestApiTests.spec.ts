@@ -1,7 +1,7 @@
 import { test, request, expect } from '@playwright/test'
-import { StatusCode } from '../../../infra/api/apiClient/ApiClient';
-import { IUser } from '../../../infra/api/helpers/interfaces/ApiObjectsInterfaces';
+import { IUser } from '../../../infra/api/helpers/types/api-types';
 import { Users } from '../../../infra/api/entities/gorestapi/Users';
+import { StatusCode } from '../../../infra/api/helpers/types/api-request-types';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
     let users: Users;
@@ -16,7 +16,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
             let response = await users.getUsers();
             expect(response?.status()).toBe(StatusCode.OK)
             expect(response?.body()).toBeTruthy()
-            let actualObjectProperties = await users.getTypeOfUserProperies()
+            let actualObjectProperties = await users.getTypeOfUserProperties()
             let expectedObjectProperties = new Array(actualObjectProperties.length).fill(['number', 'string', 'string', 'string', 'string'])
             expect(actualObjectProperties).toEqual(expectedObjectProperties)
         })
@@ -39,7 +39,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
             let response = await users.replaceEmailExtensionForUsers()
             expect(response?.status()).toBe(StatusCode.OK)
         })
-        await test.step('validate previous extenstions were replaced with co.il extension', async () => {
+        await test.step('validate previous extensions were replaced with co.il extension', async () => {
             let actualEmailExtensions = await users.getCurrentUserEmailExtension()
             let expectedExtensions = new Array(actualEmailExtensions.length).fill('.co.il')
             expect(actualEmailExtensions).toEqual(expectedExtensions)
