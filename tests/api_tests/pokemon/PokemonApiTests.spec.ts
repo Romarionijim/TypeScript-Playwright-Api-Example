@@ -17,7 +17,7 @@ test.describe('Pokemon API CRUD tests', async () => {
             let jsonResponse = await res?.json()
             expect(res?.status()).toBe(StatusCode.OK)
             expect(jsonResponse).toEqual(expect.objectContaining({
-                count: 1302,
+                count: 1304,
                 next: "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
                 previous: null,
                 results: expect.any(Array)
@@ -30,7 +30,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
             let response = await pokemonApi.getAllPokemonRecourses(limit, offset)
             let responseLength = response?.length
-            expect(responseLength).toBe(1302)
+            expect(responseLength).toBe(1304)
         })
     })
 

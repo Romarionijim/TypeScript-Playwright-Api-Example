@@ -93,8 +93,6 @@ export class Users extends ApiClient {
             this.usersEndpoint,
             PaginationType.PAGE_PAGINATION,
             {
-                paginateRequest: true,
-                pagePagination: true,
                 pageNumber: page
             }
         )

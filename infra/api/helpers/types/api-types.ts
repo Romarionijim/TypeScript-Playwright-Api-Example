@@ -31,12 +31,9 @@ export enum PaginationType {
 
 export interface IPagination {
     paginateRequest?: boolean,
-    pagePagination?: boolean,
-    limitOffsetPagination?: boolean,
     pageNumber?: number,
     limit?: number,
     offset?: number,
-    cursor?: boolean,
     cursorKey?: string,
     paginationType?: PaginationType,
 }
