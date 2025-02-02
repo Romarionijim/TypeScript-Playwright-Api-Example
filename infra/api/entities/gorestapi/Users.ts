@@ -99,7 +99,7 @@ export class Users extends ApiClient {
         return response;
     }
 
-    public async getTypeOfUserProperies() {
+    public async getTypeOfUserProperties() {
         let users = await this.getUsers();
         let userObject = await users?.json()
         let types: any = [];
