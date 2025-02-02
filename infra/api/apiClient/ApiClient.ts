@@ -66,7 +66,7 @@ export class ApiClient {
         }
         if (options?.isMultiPart) {
             headers["Content-Type"] = 'multipart/form-data'
-        } 
+        }
         if (options?.isAuthorizationRequired && method !== RequestMethod.GET) {
             await this.addAuthorizationHeader(headers)
         }
@@ -106,14 +106,9 @@ export class ApiClient {
     ) {
         let response: APIResponse | undefined;
         let responses: APIResponse[] = [];
-        let queryParams = options.queryParams ? { ...options.queryParams } : {};
         while (true) {
-            if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
-                queryParams = { ...queryParams, 'page': options.pageNumber };
-            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.limit !== undefined && options.offset !== undefined) {
-                queryParams = { ...queryParams, 'limit': options.limit, 'offset': options.offset };
-            }
-            response = await this.makeRequest(method, url, { ...options, queryParams });
+            await this.updatePaginationQueryParams(paginationType, options);
+            response = await this.makeRequest(method, url, options);
             let responseObj = await response?.json();
             if (!responseObj || responseObj.length === 0) {
                 break;
@@ -127,11 +122,7 @@ export class ApiClient {
             } else {
                 await this.handleResponseObject(responses, responseObj);
             }
-            if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
-                options.pageNumber++;
-            } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.offset !== undefined && options.limit !== undefined) {
-                options.offset += options.limit;
-            }
+            await this.updatePaginationOptions(paginationType, options);
         }
 
         return responses;
@@ -141,11 +132,32 @@ export class ApiClient {
      * to the array.
      * @param responseObj 
      */
-    private async handleResponseObject(responses: APIResponse[], responseObj: any) {
+    private async handleResponseObject(responses: APIResponse[], responseObj: APIResponse) {
         if (Array.isArray(responseObj)) {
             responses.push(...responseObj)
         } else {
             responses.push(responseObj);
+        }
+    }
+
+    private async updatePaginationQueryParams<T>(paginationType: PaginationType, options: ApiOptionalParams<T> = {}) {
+        if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
+            options.queryParams = { ...options.queryParams, 'page': options.pageNumber }
+        } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.limit !== undefined && options.offset !== undefined) {
+            options.queryParams = { ...options.queryParams, 'limit': options.limit, 'offset': options.offset }
+        }
+    }
+
+    /**
+     * @description update the pagination options based on the pagination type - page or offset pagination at the moment
+     * @param paginationType 
+     * @param options 
+     */
+    private async updatePaginationOptions<T>(paginationType: PaginationType, options: ApiOptionalParams<T> = {}) {
+        if (paginationType === PaginationType.PAGE_PAGINATION && options.pageNumber !== undefined) {
+            options.pageNumber++;
+        } else if (paginationType === PaginationType.OFFSET_PAGINATION && options.limit !== undefined && options.offset !== undefined) {
+            options.offset += options.limit;
         }
     }
 }
