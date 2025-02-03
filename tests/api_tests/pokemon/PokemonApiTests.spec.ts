@@ -35,7 +35,6 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-
     test('response keys type validation', { tag: [TestTags.POKEMON_API] }, async () => {
         await test.step('validate that each key in the results response object are equals to strings', async () => {
             let res = await pokemonApi.getPokemon()
