@@ -1,4 +1,4 @@
-import { fa, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 
 export default class MockDataGenerator {
 
