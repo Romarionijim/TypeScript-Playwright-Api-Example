@@ -1,7 +1,6 @@
-import { test, request, expect } from '@playwright/test'
-import { IUser } from '../../../infra/api/helpers/types/api-types';
-import { Users } from '../../../infra/api/entities/gorestapi/Users';
-import { StatusCode } from '../../../infra/api/helpers/types/api-request-types';
+import { test, expect } from '@playwright/test'
+import { Users } from '@api-entities';
+import { StatusCode, TestTags } from '@api-helpers';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
     let users: Users;
@@ -11,7 +10,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         users = new Users(request);
     })
 
-    test('sanity check', { tag: ['@GO_REST_API'] }, async () => {
+    test('sanity check', { tag: [TestTags.GO_REST_API] }, async () => {
         await test.step('get users endpoint - validate status, body type of obejct properties and default length of the response', async () => {
             let response = await users.getUsers();
             expect(response?.status()).toBe(StatusCode.OK)
@@ -25,7 +24,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     /**
      * @description there is a bug with this endpoint - it does not authorize any generated toke=n whatsoever
      */
-    test('gender equality', { tag: ['@GO_REST_API'] }, async () => {
+    test('gender equality', { tag: [TestTags.GO_REST_API] }, async () => {
         await test.step('make an api request to make both male and female genders equal', async () => {
             await users.makeBothGendersEven();
             let maleGender = await users.getGender('male')
@@ -34,7 +33,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         })
     })
 
-    test('replace email extension of users', { tag: ['@GO_REST_API'] }, async () => {
+    test('replace email extension of users', { tag: [TestTags.GO_REST_API] }, async () => {
         await test.step('extract extension of each user email and replace each extension with co.il', async () => {
             let response = await users.replaceEmailExtensionForUsers()
             expect(response?.status()).toBe(StatusCode.OK)
@@ -46,7 +45,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         })
     })
 
-    test('delete inactive users', { tag: ['@GO_REST_API'] }, async () => {
+    test('delete inactive users', { tag: [TestTags.GO_REST_API] }, async () => {
         await test.step('make a request to delete all users that have an inactive status', async () => {
             let response = await users.deleteInactiveUsers()
             expect(response?.status()).toBe(StatusCode.UNAUTHORIZED)

@@ -1,6 +1,6 @@
 import { APIResponse } from "@playwright/test";
 import { ApiClient } from "../../apiClient/ApiClient";
-import Randomizer from "../../helpers/faker/Randomizer";
+import MockDataGenerator from "../../helpers/mocks/mocks";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
 import { RequestMethod } from "../../helpers/types/api-request-types";
@@ -36,9 +36,9 @@ export class Users extends ApiClient {
             } else if (maleUsers > femaleUsers) {
                 for (let i = 0; i < difference; i++) {
                     let femaleData = {
-                        id: Randomizer.getRandomNumber(),
-                        name: Randomizer.getRandomFemaleFirstName(),
-                        email: Randomizer.getRandomEmail(),
+                        id: MockDataGenerator.getRandomNumber(),
+                        name: MockDataGenerator.getRandomFemaleFirstName(),
+                        email: MockDataGenerator.getRandomEmail(),
                         gender: 'female',
                         status: 'active',
                     }
@@ -47,9 +47,9 @@ export class Users extends ApiClient {
             } else {
                 for (let i = 0; i < difference; i++) {
                     let maleData = {
-                        id: Randomizer.getRandomNumber(),
-                        name: Randomizer.getRandomMaleFirstName(),
-                        email: Randomizer.getRandomEmail(),
+                        id: MockDataGenerator.getRandomNumber(),
+                        name: MockDataGenerator.getRandomMaleFirstName(),
+                        email: MockDataGenerator.getRandomEmail(),
                         gender: 'male',
                         status: 'active',
                     }
