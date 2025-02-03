@@ -62,10 +62,10 @@ export class ApiClient {
             'Content-Type': 'application/json',
             'Accept': '*/*'
         }
-        if (options?.isMultiPart) {
+        if (options.isMultiPart) {
             headers["Content-Type"] = 'multipart/form-data'
         }
-        if (options?.isAuthorizationRequired && method !== RequestMethod.GET) {
+        if (options.isAuthorizationRequired && method !== RequestMethod.GET) {
             await this.addAuthorizationHeader(headers)
         }
         switch (method.valueOf()) {
