@@ -3,10 +3,10 @@ import { ApiClient } from "../../apiClient/ApiClient";
 import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
 import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
 import path from "path";
-import Randomizer from "../../helpers/faker/Randomizer";
+import MockDataGenerator from "../../helpers/mocks/mocks";
 import fs from 'fs'
 
-export class PetStoreCrudActions extends ApiClient {
+export class PetStoreApi extends ApiClient {
 
     private petStorePetEndpoint = `${ApplicationUrl.PET_STORE_URL}/${ApiEndpoints.PET}`
 

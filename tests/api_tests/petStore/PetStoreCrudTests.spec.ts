@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test'
-import { PetStoreCrudActions } from '@api-entities'
+import { PetStoreApi } from '@api-entities'
 import MockDataGenerator, { IPet, StatusCode } from '@api-helpers';
 
 test.describe.serial('CRUD API tests for the Pet Store API', async () => {
-    let petStoreCrudActions: PetStoreCrudActions;
+    let petStoreCrudActions: PetStoreApi;
     let id: number = 10;
     let petId: number = 3193;
 
 
     test.beforeEach(async ({ request }) => {
-        petStoreCrudActions = new PetStoreCrudActions(request)
+        petStoreCrudActions = new PetStoreApi(request)
     })
 
     test('get a specific pet for sanity checkup', { tag: ['@PET_STORE_API'] }, async () => {
