@@ -1,6 +1,7 @@
-import { expect, test } from '@playwright/test'
-import { PokemonApi } from '../../../infra/api/entities/pokemon/PokemonApi'
-import { StatusCode } from '../../../infra/api/helpers/types/api-request-types';
+import { expect, test } from '@playwright/test';
+import { PokemonApi } from '@api-entities';
+import { StatusCode } from '@api-helpers';
+import { TestTags } from '@api-helpers';
 
 test.describe('Pokemon API CRUD tests', async () => {
     let pokemonApi: PokemonApi
@@ -11,7 +12,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         pokemonApi = new PokemonApi(request);
     })
 
-    test('GET the pokemon resources', { tag: ['@POKEMON_API'] }, async () => {
+    test('GET the pokemon resources', { tag: [TestTags.POKEMON_API] }, async () => {
         await test.step('GET first 20 pokemon resources by default and validate initial response', async () => {
             let res = await pokemonApi.getPokemon();
             let jsonResponse = await res?.json()
@@ -26,7 +27,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-    test('get all pokemon resources', { tag: ['@POKEMON_API'] }, async () => {
+    test('get all pokemon resources', { tag: [TestTags.POKEMON_API] }, async () => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
             let response = await pokemonApi.getAllPokemonRecourses(limit, offset)
             let responseLength = response?.length
@@ -35,7 +36,7 @@ test.describe('Pokemon API CRUD tests', async () => {
     })
 
 
-    test('response keys type validation', { tag: ['@POKEMON_API'] }, async () => {
+    test('response keys type validation', { tag: [TestTags.POKEMON_API] }, async () => {
         await test.step('validate that each key in the results response object are equals to strings', async () => {
             let res = await pokemonApi.getPokemon()
             let resJson = await res?.json()

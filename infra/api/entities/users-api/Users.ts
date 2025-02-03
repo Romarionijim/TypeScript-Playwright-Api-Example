@@ -1,10 +1,7 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient } from "../../apiClient/ApiClient";
-import Randomizer from "../../helpers/faker/Randomizer";
-import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
-import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
-import { RequestMethod } from "../../helpers/types/api-request-types";
-import { PaginationType } from "../../helpers/types/api-types";
+import { ApiClient } from "@api-client";
+import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType } from "@api-helpers";
+import { ApiEndpoints } from "@api-endpoints";
 
 export class Users extends ApiClient {
     private usersEndpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`
@@ -36,9 +33,9 @@ export class Users extends ApiClient {
             } else if (maleUsers > femaleUsers) {
                 for (let i = 0; i < difference; i++) {
                     let femaleData = {
-                        id: Randomizer.getRandomNumber(),
-                        name: Randomizer.getRandomFemaleFirstName(),
-                        email: Randomizer.getRandomEmail(),
+                        id: MockDataGenerator.getRandomNumber(),
+                        name: MockDataGenerator.getRandomFemaleFirstName(),
+                        email: MockDataGenerator.getRandomEmail(),
                         gender: 'female',
                         status: 'active',
                     }
@@ -47,9 +44,9 @@ export class Users extends ApiClient {
             } else {
                 for (let i = 0; i < difference; i++) {
                     let maleData = {
-                        id: Randomizer.getRandomNumber(),
-                        name: Randomizer.getRandomMaleFirstName(),
-                        email: Randomizer.getRandomEmail(),
+                        id: MockDataGenerator.getRandomNumber(),
+                        name: MockDataGenerator.getRandomMaleFirstName(),
+                        email: MockDataGenerator.getRandomEmail(),
                         gender: 'male',
                         status: 'active',
                     }

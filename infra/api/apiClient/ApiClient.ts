@@ -1,7 +1,5 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
-import { ApiOptionalParams, PaginationType, IRequestOptions } from '../helpers/types/api-types';
-import { RequestMethod } from '../helpers/types/api-request-types';
-
+import { ApiOptionalParams, PaginationType, RequestMethod } from '@api-helpers';
 export class ApiClient {
 
     constructor(public request: APIRequestContext) {
