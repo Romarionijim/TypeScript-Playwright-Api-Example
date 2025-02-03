@@ -1,4 +1,4 @@
-export interface Ipet {
+export interface IPet {
     id?: number,
     category?: { [key: string]: any },
     name: string,

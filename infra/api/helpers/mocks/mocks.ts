@@ -1,6 +1,6 @@
 import { fa, faker } from "@faker-js/faker";
 
-export default class Randomizer {
+export default class MockDataGenerator {
 
     public static getDogNameBreed(): string {
         return faker.animal.dog()
