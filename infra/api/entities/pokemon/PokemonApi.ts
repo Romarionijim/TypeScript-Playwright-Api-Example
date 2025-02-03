@@ -1,8 +1,7 @@
-import { ApiClient } from "../../apiClient/ApiClient";
-import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
-import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
-import { RequestMethod } from "../../helpers/types/api-request-types";
-import { PaginationType } from "../../helpers/types/api-types";
+import { ApiClient } from "@api-client";
+import { ApplicationUrl } from "@api-helpers";
+import { ApiEndpoints } from "@api-endpoints";
+import { RequestMethod, PaginationType } from "@api-helpers";
 
 export class PokemonApi extends ApiClient {
     private POKEMON_BASE_URL = ApplicationUrl.POKEMON_URL;

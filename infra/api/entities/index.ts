@@ -1,3 +1,3 @@
-export * from './gorestapi/Users';
-export * from './petStore/PetStoreCrudActions';
+export * from './users-api/Users';
+export * from './petStore/PetStore';
 export * from './pokemon/PokemonApi';

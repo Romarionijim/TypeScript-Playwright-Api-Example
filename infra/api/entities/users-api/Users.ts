@@ -1,10 +1,7 @@
 import { APIResponse } from "@playwright/test";
-import { ApiClient } from "../../apiClient/ApiClient";
-import MockDataGenerator from "../../helpers/mocks/mocks";
-import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
-import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
-import { RequestMethod } from "../../helpers/types/api-request-types";
-import { PaginationType } from "../../helpers/types/api-types";
+import { ApiClient } from "@api-client";
+import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType } from "@api-helpers";
+import { ApiEndpoints } from "@api-endpoints";
 
 export class Users extends ApiClient {
     private usersEndpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`

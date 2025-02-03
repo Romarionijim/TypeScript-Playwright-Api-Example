@@ -1,9 +1,8 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
-import { ApiClient } from "../../apiClient/ApiClient";
-import { ApiEndpoints } from "../../endpoints/ApiEndpoints";
-import { ApplicationUrl } from "../../helpers/urls/ApplicationUrl";
+import { APIResponse } from "@playwright/test";
+import { ApiClient } from "@api-client";
+import { ApiEndpoints } from "@api-endpoints";
+import { ApplicationUrl } from "@api-helpers";
 import path from "path";
-import MockDataGenerator from "../../helpers/mocks/mocks";
 import fs from 'fs'
 
 export class PetStoreApi extends ApiClient {
@@ -17,7 +16,7 @@ export class PetStoreApi extends ApiClient {
 
     public async createNewPet<T>(petData: { [key: string]: T }) {
         let response = await this.post(this.petStorePetEndpoint, { requestData: petData })
-       return response;
+        return response;
     }
 
     /**
