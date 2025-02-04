@@ -1,9 +1,9 @@
-name: Playwright Tests
+name: Run API tests
 on:
   push:
-    branches: '*'
+    branches: main
   pull_request:
-    branches: [ main, master ]
+    branches: main
 
 env:    
   API_TOKEN: ${{ secrets.API_TOKEN }}
@@ -27,7 +27,7 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test --grep ${{ matrix.greps }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report-${{ matrix.greps }}

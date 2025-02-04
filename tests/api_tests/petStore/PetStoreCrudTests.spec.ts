@@ -17,7 +17,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
             let response = await petStoreCrudActions.getPet(id)
             let responseJson: IPet = await response?.json()
             expect(response?.status()).toBe(StatusCode.OK)
-            expect(responseJson.name).toBe('doggie')
+            expect(responseJson.name).toBe('Charli')
         })
     })
 
