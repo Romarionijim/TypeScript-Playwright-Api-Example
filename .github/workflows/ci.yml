@@ -2,8 +2,11 @@ name: Run API tests
 on:
   push:
     branches: main
+
   pull_request:
     branches: main
+    
+  workflow_dispatch:
 
 env:    
   API_TOKEN: ${{ secrets.API_TOKEN }}
