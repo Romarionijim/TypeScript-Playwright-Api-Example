@@ -1,4 +1,4 @@
-import { APIResponse } from "@playwright/test";
+import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ApiClient } from "@api-client";
 import { ApiEndpoints } from "@api-endpoints";
 import { ApplicationUrl } from "@api-helpers";
@@ -7,15 +7,17 @@ import fs from 'fs'
 
 export class PetStoreApi extends ApiClient {
 
-    private petStorePetEndpoint = `${ApplicationUrl.PET_STORE_URL}/${ApiEndpoints.PET}`
-
+    constructor(request: APIRequestContext, baseUrl = ApplicationUrl.PET_STORE_URL) {
+        super(request, baseUrl)
+    }
+    
     public async getPet(petId: number): Promise<APIResponse | undefined> {
-        let response = await this.get(`${this.petStorePetEndpoint}/${petId}`)
+        let response = await this.get(`${ApiEndpoints.PET}/${petId}`)
         return response;
     }
 
     public async createNewPet<T>(petData: { [key: string]: T }) {
-        let response = await this.post(this.petStorePetEndpoint, { requestData: petData })
+        let response = await this.post(`${ApiEndpoints.PET}`, { requestData: petData })
         return response;
     }
 
@@ -33,17 +35,17 @@ export class PetStoreApi extends ApiClient {
                 buffer: image,
             },
         }
-        let response = await this.post(`${this.petStorePetEndpoint}/${petId}/${ApiEndpoints.UPLOAD_IMAGE}`, { isMultiPart: true, multiPartData })
+        let response = await this.post(`${ApiEndpoints.PET}/${petId}/${ApiEndpoints.UPLOAD_IMAGE}`, { isMultiPart: true, multiPartData })
         return response;
     }
 
-    public async updatePet<T>(updatedData: { [key: string]: T }) {
-        let response = await this.put(this.petStorePetEndpoint, { requestData: updatedData })
+    public async updatePet<T>(petId: number, updatedData: { [key: string]: T }) {
+        let response = await this.put(`${ApiEndpoints.PET}/${petId}`, { requestData: updatedData })
         return response;
     }
 
     public async deletePet(petId: number) {
-        let response = await this.delete(`${this.petStorePetEndpoint}/${petId}`)
+        let response = await this.delete(`${ApiEndpoints.PET}/${petId}`)
         return response;
     }
 }

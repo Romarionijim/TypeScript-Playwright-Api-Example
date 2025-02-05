@@ -1,3 +1,4 @@
+import { ApplicationUrl } from '@api-helpers';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -37,9 +38,28 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'goRestApi',
+      use: { 
+        ...devices['Desktop Chrome'],
+        baseURL: ApplicationUrl.GO_REST_API
+       }
     },
+
+    {
+      name: 'pokemonApi',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: ApplicationUrl.POKEMON_URL
+      }
+    },
+
+    {
+      name: 'petStoreApi',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: ApplicationUrl.PET_STORE_URL,
+    }
+  }
 
     // {
     //   name: 'firefox',

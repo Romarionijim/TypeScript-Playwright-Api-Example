@@ -7,7 +7,6 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
     let id: number = 10;
     let petId: number = 3193;
 
-
     test.beforeEach(async ({ request }) => {
         petStoreCrudActions = new PetStoreApi(request)
     })
@@ -84,7 +83,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
                 ],
                 status: 'available'
             }
-            let response = await petStoreCrudActions.updatePet(petData)
+            let response = await petStoreCrudActions.updatePet(petId, petData)
             let responseBody: IPet = await response?.json();
             expect(response?.status()).toBe(StatusCode.OK)
             expect(responseBody.name).toEqual('Pokey');

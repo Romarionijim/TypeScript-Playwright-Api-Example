@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { PokemonApi } from '@api-entities';
-import { StatusCode } from '@api-helpers';
+import { ApplicationUrl, StatusCode } from '@api-helpers';
 import { TestTags } from '@api-helpers';
 
 test.describe('Pokemon API CRUD tests', async () => {
@@ -9,7 +9,7 @@ test.describe('Pokemon API CRUD tests', async () => {
     let offset: number = 0
 
     test.beforeEach(async ({ request }) => {
-        pokemonApi = new PokemonApi(request);
+        pokemonApi = new PokemonApi(request, ApplicationUrl.POKEMON_URL);
     })
 
     test('GET the pokemon resources - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async () => {

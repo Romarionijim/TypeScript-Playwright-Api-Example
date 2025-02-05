@@ -1,44 +1,46 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { ApiOptionalParams, PaginationType, RequestMethod } from '@api-helpers';
 export class ApiClient {
+    private baseUrl: string;
 
-    constructor(public request: APIRequestContext) {
+    constructor(public request: APIRequestContext, baseUrl: string) {
         this.request = request;
+        this.baseUrl = baseUrl;
     }
 
-    public async get<T>(url: string, options: ApiOptionalParams<T> = {}) {
-        let response = await this.makeRequest(RequestMethod.GET, url, options)
+    public async get<T>(endpoint: string, options: ApiOptionalParams<T> = {}) {
+        let response = await this.makeRequest(RequestMethod.GET, endpoint, options)
         return response;
     }
 
-    public async post<T>(url: string, options: ApiOptionalParams<T> = {}) {
-        let response = await this.makeRequest(RequestMethod.POST, url, options)
+    public async post<T>(endpoint: string, options: ApiOptionalParams<T> = {}) {
+        let response = await this.makeRequest(RequestMethod.POST, endpoint, options)
         return response;
     }
 
-    public async put<T>(url: string, options: ApiOptionalParams<T> = {}) {
-        let response = await this.makeRequest(RequestMethod.PUT, url, options)
+    public async put<T>(endpoint: string, options: ApiOptionalParams<T> = {}) {
+        let response = await this.makeRequest(RequestMethod.PUT, endpoint, options)
         return response;
     }
 
-    public async patch<T>(url: string, options: ApiOptionalParams<T> = {}) {
-        let response = await this.makeRequest(RequestMethod.PATCH, url, options)
+    public async patch<T>(endpoint: string, options: ApiOptionalParams<T> = {}) {
+        let response = await this.makeRequest(RequestMethod.PATCH, endpoint, options)
         return response;
     }
 
-    public async delete<T>(url: string, options: ApiOptionalParams<T> = {}) {
-        let response = await this.makeRequest(RequestMethod.DELETE, url, options)
+    public async delete<T>(endpoint: string, options: ApiOptionalParams<T> = {}) {
+        let response = await this.makeRequest(RequestMethod.DELETE, endpoint, options)
         return response;
     }
 
     public async paginateRequest<T>(
         method: RequestMethod,
-        url: string,
+        endPoint: string,
         paginationType: PaginationType,
         options: ApiOptionalParams<T>
     ) {
         try {
-            let response = await this.paginateBy(method, url, paginationType, options);
+            let response = await this.paginateBy(method, `${this.baseUrl}/${endPoint}`, paginationType, options);
             return response;
         } catch (error) {
             throw new Error(`an error occurred in the paginate request function: ${error}`)
@@ -54,7 +56,7 @@ export class ApiClient {
      */
     private async makeRequest<T>(
         method: RequestMethod,
-        url: string,
+        endpoint: string,
         options: ApiOptionalParams<T> = {}
     ): Promise<APIResponse | undefined> {
         let response: APIResponse | undefined
@@ -70,19 +72,19 @@ export class ApiClient {
         }
         switch (method.valueOf()) {
             case 'GET':
-                response = await this.request.get(url, { headers, params: options.queryParams })
+                response = await this.request.get(`${this.baseUrl}/${endpoint}`, { headers, params: options.queryParams })
                 break;
             case 'POST':
-                response = await this.request.post(url, { headers, data: options.requestData, multipart: options.multiPartData })
+                response = await this.request.post(`${this.baseUrl}/${endpoint}`, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'PUT':
-                response = await this.request.put(url, { headers, data: options.requestData, multipart: options.multiPartData })
+                response = await this.request.put(`${this.baseUrl}/${endpoint}`, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'PATCH':
-                response = await this.request.patch(url, { headers, data: options.requestData, multipart: options.multiPartData })
+                response = await this.request.patch(`${this.baseUrl}/${endpoint}`, { headers, data: options.requestData, multipart: options.multiPartData })
                 break;
             case 'DELETE':
-                response = await this.request.delete(url)
+                response = await this.request.delete(`${this.baseUrl}/${endpoint}`)
                 break;
         }
         return response;
@@ -98,7 +100,7 @@ export class ApiClient {
 
     private async paginateBy<T>(
         method: RequestMethod,
-        url: string,
+        endPoint: string,
         paginationType: PaginationType,
         options: ApiOptionalParams<T> = {}
     ) {
@@ -106,7 +108,7 @@ export class ApiClient {
         let responses: APIResponse[] = [];
         while (true) {
             await this.updatePaginationQueryParams(paginationType, options);
-            response = await this.makeRequest(method, url, options);
+            response = await this.makeRequest(method, endPoint, options);
             let responseObj = await response?.json();
             if (!responseObj || responseObj.length === 0) {
                 break;

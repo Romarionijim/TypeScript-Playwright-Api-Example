@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
 import { Users } from '@api-entities';
-import { StatusCode, TestTags } from '@api-helpers';
+import { ApplicationUrl, StatusCode, TestTags } from '@api-helpers';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
     let users: Users;
     let pageNumber: number = 1
 
     test.beforeEach(async ({ request }) => {
-        users = new Users(request);
+        users = new Users(request, ApplicationUrl.GO_REST_API);
     })
 
     test('sanity check - [GET] /users', { tag: [TestTags.GO_REST_API] }, async () => {
