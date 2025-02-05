@@ -1,18 +1,14 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '@api-helpers';
 import { PokemonApi } from '@api-entities';
 import { StatusCode } from '@api-helpers';
 import { TestTags } from '@api-helpers';
 
 test.describe('Pokemon API CRUD tests', async () => {
-    let pokemonApi: PokemonApi
     let limit: number = 100;
     let offset: number = 0
 
-    test.beforeEach(async ({ request }) => {
-        pokemonApi = new PokemonApi(request);
-    })
-
-    test('GET the pokemon resources - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async () => {
+    test('GET the pokemon resources - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async ({ pokemonApi }) => {
         await test.step('GET first 20 pokemon resources by default and validate initial response', async () => {
             let res = await pokemonApi.getPokemon();
             let jsonResponse = await res?.json()
@@ -27,7 +23,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-    test('get all pokemon resources pagination - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async () => {
+    test('get all pokemon resources pagination - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async ({ pokemonApi }) => {
         await test.step('get all pokemon recourses via limit and offset pagination', async () => {
             let response = await pokemonApi.getAllPokemonRecourses(limit, offset)
             let responseLength = response?.length
@@ -35,7 +31,7 @@ test.describe('Pokemon API CRUD tests', async () => {
         })
     })
 
-    test('response keys type validation - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async () => {
+    test('response keys type validation - [GET] /pokemon', { tag: [TestTags.POKEMON_API] }, async ({ pokemonApi }) => {
         await test.step('validate that each key in the results response object are equals to strings', async () => {
             let res = await pokemonApi.getPokemon()
             let resJson = await res?.json()
