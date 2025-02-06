@@ -5,7 +5,7 @@ import { StatusCode, TestTags } from '@api-helpers';
 
 test.describe('Api tests for GoRestApi endpoints', async () => {
 
-    test('sanity check - [GET] /users', { tag: [TestTags.GO_REST_API] }, async ({ usersApi }) => {
+    test('sanity check - [GET] /users', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('get users endpoint - validate status, body type of object properties and default length of the response', async () => {
             let response = await usersApi.getUsers();
             expect(response?.status()).toBe(StatusCode.OK)
@@ -19,7 +19,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     /**
      * @description there is a bug with this endpoint - it does not authorize any generated toke=n whatsoever
      */
-    test('gender equality - [POST] /users', { tag: [TestTags.GO_REST_API] }, async ({ usersApi }) => {
+    test('gender equality - [POST] /users', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('make an api request to make both male and female genders equal', async () => {
             await usersApi.makeBothGendersEven();
             let maleGender = await usersApi.getGender('male')
@@ -28,7 +28,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         })
     })
 
-    test('replace email extension of users - [PATCH] /users/:userId', { tag: [TestTags.GO_REST_API] }, async ({ usersApi }) => {
+    test('replace email extension of users - [PATCH] /users/:userId', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('extract extension of each user email and replace each extension with co.il', async () => {
             let response = await usersApi.replaceEmailExtensionForUsers()
             expect(response?.status()).toBe(StatusCode.OK)
@@ -40,7 +40,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         })
     })
 
-    test('delete inactive users - [DELETE] /users/:userId', { tag: [TestTags.GO_REST_API] }, async ({ usersApi }) => {
+    test('delete inactive users - [DELETE] /users/:userId', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('make a request to delete all users that have an inactive status', async () => {
             let response = await usersApi.deleteInactiveUsers()
             expect(response?.status()).toBe(StatusCode.UNAUTHORIZED)
