@@ -41,7 +41,6 @@ export interface IPagination {
 export interface IRequestOptions<T> {
     queryParams?: { [key: string]: any },
     requestData?: { [key: string]: T },
-    isAuthorizationRequired?: boolean,
     isMultiPart?: boolean,
     multiPartData?: { [key: string]: any },
 }
