@@ -7,7 +7,7 @@ export class PokemonApi extends ApiClient {
     private POKEMON_BASE_URL = ApplicationUrl.POKEMON_URL;
     private POKEMON_ENDPOINT = `${this.POKEMON_BASE_URL}/${ApiEndpoints.POKEMON}`;
 
-    public async getPokemon() {
+    async getPokemon() {
         let response = await this.get(this.POKEMON_ENDPOINT)
         return response;
     }
@@ -15,7 +15,7 @@ export class PokemonApi extends ApiClient {
     /**
      * @description get all pokemon recourses by using pagination - you can choose via page or limit and offset pagination mechanism
      */
-    public async getAllPokemonRecourses(limit: number, offset: number) {
+    async getAllPokemonRecourses(limit: number, offset: number) {
         let responses = await this.paginateRequest(
             RequestMethod.GET,
             this.POKEMON_ENDPOINT,
