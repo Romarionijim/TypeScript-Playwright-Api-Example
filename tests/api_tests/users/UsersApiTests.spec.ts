@@ -22,8 +22,8 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     test('gender equality - [POST] /users', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('make an api request to make both male and female genders equal', async () => {
             await usersApi.makeBothGendersEven();
-            let maleGender = await usersApi.getGender('male')
-            let femaleGender = await usersApi.getGender('female')
+            let maleGender = await usersApi.getGenderCount('male')
+            let femaleGender = await usersApi.getGenderCount('female')
             expect(maleGender).toEqual(femaleGender)
         })
     })

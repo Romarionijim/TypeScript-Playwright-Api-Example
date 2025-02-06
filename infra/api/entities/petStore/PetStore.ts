@@ -6,15 +6,14 @@ import path from "path";
 import fs from 'fs'
 
 export class PetStoreApi extends ApiClient {
-
     private petStorePetEndpoint = `${ApplicationUrl.PET_STORE_URL}/${ApiEndpoints.PET}`
 
-    public async getPet(petId: number): Promise<APIResponse | undefined> {
+    async getPet(petId: number): Promise<APIResponse | undefined> {
         let response = await this.get(`${this.petStorePetEndpoint}/${petId}`)
         return response;
     }
 
-    public async createNewPet<T>(petData: { [key: string]: T }) {
+    async createNewPet<T>(petData: { [key: string]: T }) {
         let response = await this.post(this.petStorePetEndpoint, { requestData: petData })
         return response;
     }
@@ -22,7 +21,7 @@ export class PetStoreApi extends ApiClient {
     /**
      * @description this function uploads a pet image via reading a file and uploading it as a buffer file using the playwright multipart photo upload
      */
-    public async uploadPetImage<T>(petId: number, fileName: string) {
+    async uploadPetImage<T>(petId: number, fileName: string) {
         const rootDir = '.'
         const file = path.resolve(rootDir, fileName);
         const image = fs.readFileSync(file);
@@ -37,12 +36,12 @@ export class PetStoreApi extends ApiClient {
         return response;
     }
 
-    public async updatePet<T>(updatedData: { [key: string]: T }) {
+    async updatePet<T>(updatedData: { [key: string]: T }) {
         let response = await this.put(this.petStorePetEndpoint, { requestData: updatedData })
         return response;
     }
 
-    public async deletePet(petId: number) {
+    async deletePet(petId: number) {
         let response = await this.delete(`${this.petStorePetEndpoint}/${petId}`)
         return response;
     }
