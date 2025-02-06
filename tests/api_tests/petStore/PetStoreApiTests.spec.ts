@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '@api-helpers';
 import MockDataGenerator, { IPet, StatusCode, TestTags } from '@api-helpers';
+import { payloads } from '@api-helpers';
 
 test.describe.serial('CRUD API tests for the Pet Store API', async () => {
     let id: number = 10;
@@ -17,26 +18,11 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
 
     test('create a new pet - [POST] /pet', { tag: [TestTags.PET_STORE] }, async ({ petStoreApi }) => {
         await test.step('create a new pet via post request', async () => {
-            let petData = {
-                id: petId,
-                category: {
-                    id: MockDataGenerator.getRandomLongNumber(),
-                    name: MockDataGenerator.getRandomName()
-                },
-                name: 'Pikachu',
-                photoUrls: ['https://ibb.co/wLWCrSX'],
-                tags: [
-                    {
-                        id: MockDataGenerator.getRandomLongNumber(),
-                        name: MockDataGenerator.getRandomName(),
-                    }
-                ],
-                status: 'available'
-            }
-            let response = await petStoreApi.createNewPet(petData)
+          
+            let response = await petStoreApi.createNewPet(payloads.createdPet)
             let responseBody: IPet = await response?.json();
             expect(response?.status()).toBe(StatusCode.OK);
-            expect(responseBody).toEqual(petData);
+            expect(responseBody).toEqual(payloads.createdPet);
             expect(response?.statusText()).toBe('OK');
         })
     })
@@ -62,23 +48,7 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
 
     test('update pet - [PATCH] /pet/:petId', { tag: [TestTags.PET_STORE] }, async ({ petStoreApi }) => {
         await test.step('update the newly created pet that was created in previous test', async () => {
-            let petData = {
-                id: petId,
-                category: {
-                    id: MockDataGenerator.getRandomLongNumber(),
-                    name: MockDataGenerator.getRandomName()
-                },
-                name: 'Pokey',
-                photoUrls: ['https://ibb.co/0Z9v02Z'],
-                tags: [
-                    {
-                        id: MockDataGenerator.getRandomLongNumber(),
-                        name: MockDataGenerator.getRandomName(),
-                    }
-                ],
-                status: 'available'
-            }
-            let response = await petStoreApi.updatePet(petData)
+            let response = await petStoreApi.updatePet(payloads.updatePet)
             let responseBody: IPet = await response?.json();
             expect(response?.status()).toBe(StatusCode.OK)
             expect(responseBody.name).toEqual('Pokey');
