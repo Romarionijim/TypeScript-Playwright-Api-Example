@@ -1,6 +1,6 @@
 import { APIResponse } from "@playwright/test";
 import { ApiClient } from "@api-client";
-import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType } from "@api-helpers";
+import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType, payloads } from "@api-helpers";
 import { ApiEndpoints } from "@api-endpoints";
 
 export class Users extends ApiClient {
@@ -32,25 +32,11 @@ export class Users extends ApiClient {
                 return;
             } else if (maleUsers > femaleUsers) {
                 for (let i = 0; i < difference; i++) {
-                    let femaleData = {
-                        id: MockDataGenerator.getRandomNumber(),
-                        name: MockDataGenerator.getRandomFemaleFirstName(),
-                        email: MockDataGenerator.getRandomEmail(),
-                        gender: 'female',
-                        status: 'active',
-                    }
-                    response = await this.post(this.usersEndpoint, { requestData: femaleData, isAuthorizationRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: payloads.femaleData, isAuthorizationRequired: true })
                 }
             } else {
                 for (let i = 0; i < difference; i++) {
-                    let maleData = {
-                        id: MockDataGenerator.getRandomNumber(),
-                        name: MockDataGenerator.getRandomMaleFirstName(),
-                        email: MockDataGenerator.getRandomEmail(),
-                        gender: 'male',
-                        status: 'active',
-                    }
-                    response = await this.post(this.usersEndpoint, { requestData: maleData, isAuthorizationRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: payloads.maleData, isAuthorizationRequired: true })
                 }
             }
             return response;
