@@ -1,5 +1,5 @@
 export enum TestTags {
-  GO_REST_API = '@GoRestApi',
+  Users = '@Users',
   PET_STORE = '@PetStore',
   POKEMON_API = '@PokemonApi',
 }
