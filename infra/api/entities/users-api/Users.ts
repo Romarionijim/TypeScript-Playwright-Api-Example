@@ -45,14 +45,14 @@ export class Users extends ApiClient {
         }
     }
 
-    async getInActiveUsers() {
+    async getInactiveUsers() {
         let res = await this.getUserStatus('inactive')
         return res
     }
 
     async deleteInactiveUsers() {
         let response: APIResponse | undefined
-        let inActiveUsers = await this.getInActiveUsers()
+        let inActiveUsers = await this.getInactiveUsers()
         for (let user of inActiveUsers) {
             response = await this.delete(`${this.usersEndpoint}/${user.id}`, { isAuthorizationRequired: true })
         }

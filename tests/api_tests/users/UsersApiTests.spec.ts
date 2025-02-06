@@ -44,7 +44,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
         await test.step('make a request to delete all users that have an inactive status', async () => {
             let response = await usersApi.deleteInactiveUsers()
             expect(response?.status()).toBe(StatusCode.UNAUTHORIZED)
-            let actualInactiveUsers = await usersApi.getInActiveUsers()
+            let actualInactiveUsers = await usersApi.getInactiveUsers()
             let expectedInactiveUsersLength = actualInactiveUsers.length
             expect(expectedInactiveUsersLength).toBe(0)
         })
