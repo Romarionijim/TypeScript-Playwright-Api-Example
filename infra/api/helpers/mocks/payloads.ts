@@ -1,7 +1,6 @@
 import MockDataGenerator from "@api-helpers";
 
 export const payloads = {
-  
   createdPet: {
     id: 3193,
     category: {
@@ -34,5 +33,21 @@ export const payloads = {
       }
     ],
     status: 'available'
+  },
+
+  maleData: {
+    id: MockDataGenerator.getRandomNumber(),
+    name: MockDataGenerator.getRandomMaleFirstName(),
+    email: MockDataGenerator.getRandomEmail(),
+    gender: 'male',
+    status: 'active',
+  },
+
+  femaleData: {
+    id: MockDataGenerator.getRandomNumber(),
+    name: MockDataGenerator.getRandomFemaleFirstName(),
+    email: MockDataGenerator.getRandomEmail(),
+    gender: 'female',
+    status: 'active',
   }
 }
