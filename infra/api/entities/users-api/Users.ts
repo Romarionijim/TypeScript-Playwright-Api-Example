@@ -6,15 +6,15 @@ import { ApiEndpoints } from "@api-endpoints";
 export class Users extends ApiClient {
     private usersEndpoint = `${ApplicationUrl.GO_REST_API}/${ApiEndpoints.USERS_ENDPOINT}`
 
-    public async getUsers() {
+    async getUsers() {
         let response = await this.get(this.usersEndpoint)
         return response;
     }
 
-    public async getGender(gender: string) {
+    async getGenderCount(gender: string) {
         let response = await this.get(this.usersEndpoint)
         let responseObject = await response?.json()
-        let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
+        let genderFilter = responseObject.filter((el: { gender: string; }) => el.gender === gender).length
         return genderFilter
     }
 
@@ -22,21 +22,21 @@ export class Users extends ApiClient {
      * @description make both genders even for the first default 10 records without pagination
      * @returns 
      */
-    public async makeBothGendersEven() {
+    async makeBothGendersEven() {
         let response: APIResponse | undefined
-        let maleUsers = await this.getGender('male');
-        let femaleUsers = await this.getGender('female');
+        let maleUsers = await this.getGenderCount('male');
+        let femaleUsers = await this.getGenderCount('female');
         try {
             let difference = Math.abs(maleUsers - femaleUsers)
             if (maleUsers === femaleUsers) {
                 return;
             } else if (maleUsers > femaleUsers) {
                 for (let i = 0; i < difference; i++) {
-                    response = await this.post(this.usersEndpoint, { requestData: payloads.femaleData, isAuthorizationRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: payloads.femaleData })
                 }
             } else {
                 for (let i = 0; i < difference; i++) {
-                    response = await this.post(this.usersEndpoint, { requestData: payloads.maleData, isAuthorizationRequired: true })
+                    response = await this.post(this.usersEndpoint, { requestData: payloads.maleData })
                 }
             }
             return response;
@@ -45,23 +45,16 @@ export class Users extends ApiClient {
         }
     }
 
-    private async getUserStatus(status: string) {
-        let users = await this.get(this.usersEndpoint)
-        let usersJsonObject = await users?.json()
-        let inactiveUsers = usersJsonObject.filter((user: { status: string; }) => user.status === status)
-        return inactiveUsers
+    async getInactiveUsers() {
+        let response = await this.getUserStatus('inactive')
+        return response
     }
 
-    public async getInActiveUsers() {
-        let res = await this.getUserStatus('inactive')
-        return res
-    }
-
-    public async deleteInactiveUsers() {
+    async deleteInactiveUsers() {
         let response: APIResponse | undefined
-        let inActiveUsers = await this.getInActiveUsers()
+        let inActiveUsers = await this.getInactiveUsers()
         for (let user of inActiveUsers) {
-            response = await this.delete(`${this.usersEndpoint}/${user.id}`, { isAuthorizationRequired: true })
+            response = await this.delete(`${this.usersEndpoint}/${user.id}`)
         }
         return response;
     }
@@ -70,7 +63,7 @@ export class Users extends ApiClient {
      * @description get all of the users using page pagination
      * @returns 
      */
-    public async getAllUsers(page: number) {
+    async getAllUsers(page: number) {
         let response = await this.paginateRequest(
             RequestMethod.GET,
             this.usersEndpoint,
@@ -82,26 +75,23 @@ export class Users extends ApiClient {
         return response;
     }
 
-    public async getTypeOfUserProperties() {
-        let users = await this.getUsers();
-        let userObject = await users?.json()
-        let types: any = [];
-        for (let user of userObject) {
-            types.push([typeof user.id, typeof user.name, typeof user.email, typeof user.gender, typeof user.status]);
-        }
-        return types;
+    async getTypeOfUserProperties() {
+        const usersResponse = await this.getUsers();
+        const users = await usersResponse?.json();
+        return users.map((user: any) => [
+            typeof user.id,
+            typeof user.name,
+            typeof user.email,
+            typeof user.gender,
+            typeof user.status
+        ]);
     }
 
-    private async extractEmailExtension(email: string) {
-        let domain = email.split('@').pop()
-        let extension = domain?.split('.').pop()
-        return extension
-    }
 
     /**
      * @description replaces each email with .co.il extension
-     */
-    public async replaceEmailExtensionForUsers() {
+    */
+    async replaceEmailExtensionForUsers() {
         let users = await this.getUsers()
         let usersObject = await users?.json()
         let response: APIResponse | undefined
@@ -112,7 +102,12 @@ export class Users extends ApiClient {
                 if (emailExtension && emailExtension !== 'co.il') {
                     let newEmail = await email.replace(emailExtension, 'co.il');
                     let newEmailProperty = { email: newEmail }
-                    response = await this.patch(`${this.usersEndpoint}/${user.id}`, { requestData: newEmailProperty, isAuthorizationRequired: true })
+                    response = await this.patch(
+                        `${this.usersEndpoint}/${user.id}`,
+                        {
+                            requestData: newEmailProperty
+                        }
+                    )
                 }
             }
             return response
@@ -121,7 +116,7 @@ export class Users extends ApiClient {
         }
     }
 
-    public async getCurrentUserEmailExtension() {
+    async getCurrentUserEmailExtension() {
         let extensions: string[] = []
         let users = await this.getUsers()
         let usersJsonObject = await users?.json()
@@ -131,5 +126,18 @@ export class Users extends ApiClient {
             extensions.push(extension!)
         }
         return extensions
+    }
+
+    private async getUserStatus(status: string) {
+        let users = await this.get(this.usersEndpoint)
+        let usersJsonObject = await users?.json()
+        let inactiveUsers = usersJsonObject.filter((user: { status: string; }) => user.status === status)
+        return inactiveUsers
+    }
+
+    private async extractEmailExtension(email: string) {
+        let domain = email.split('@').pop()
+        let extension = domain?.split('.').pop()
+        return extension
     }
 }
