@@ -18,7 +18,6 @@ test.describe.serial('CRUD API tests for the Pet Store API', async () => {
 
     test('create a new pet - [POST] /pet', { tag: [TestTags.PET_STORE] }, async ({ petStoreApi }) => {
         await test.step('create a new pet via post request', async () => {
-          
             let response = await petStoreApi.createNewPet(payloads.createdPet)
             let responseBody: IPet = await response?.json();
             expect(response?.status()).toBe(StatusCode.OK);
