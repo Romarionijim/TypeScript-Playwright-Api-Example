@@ -5,7 +5,7 @@
 * Applied an Object-Oriented Programming (OOP) structure to ensure reusability, scalability, and maintainability of the framework.
 * Integrated CI/CD pipelines with GitHub Actions for automated testing and deployment.
 ## Pre requisites
-* Nodejs installed version 18 and above (you can use NVM)
+* Nodejs installed version 20 and above (you can use NVM)
 * IDE (VScode, Webstorm)
 ## Getting started
 * to get started with the project - first clone the repo by opening the terminal in your IDE and run:
