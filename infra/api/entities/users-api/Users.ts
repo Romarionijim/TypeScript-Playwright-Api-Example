@@ -96,7 +96,7 @@ export class Users extends ApiClient {
         let users = await this.getUsers()
         let usersObject = await users?.json()
         try {
-            let response = await Promise.all(usersObject.map(async (user: IUser) => {
+            let response: APIResponse[] = await Promise.all(usersObject.map(async (user: IUser) => {
                 let email = user.email;
                 if (email) {
                     let extension = await this.extractEmailExtension(email);
@@ -112,7 +112,7 @@ export class Users extends ApiClient {
                     }
                 }
             }));
-            return response.filter((res): res is APIResponse => res !== undefined);
+            return response.filter((res: APIResponse) => res !== undefined);
         } catch (error) {
             throw new Error(`Error updating email extensions: ${error}`);
         }
