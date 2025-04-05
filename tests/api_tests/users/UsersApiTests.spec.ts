@@ -31,10 +31,10 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     test('replace email extension of users - [PATCH] /users/:userId', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('extract extension of each user email and replace each extension with co.il', async () => {
             let response = await usersApi.replaceEmailExtensionForUsers()
-            expect(response?.status()).toBe(StatusCode.OK)
+            expect(response.every(res => res.status() === StatusCode.OK)).toBe(true)
         })
         await test.step('validate previous extensions were replaced with co.il extension', async () => {
-            let actualEmailExtensions = await usersApi.getCurrentUserEmailExtension()
+            let actualEmailExtensions = await usersApi.getCurrentUserEmailExtension();
             let expectedExtensions = new Array(actualEmailExtensions.length).fill('.co.il')
             expect(actualEmailExtensions).toEqual(expectedExtensions)
         })
@@ -43,7 +43,7 @@ test.describe('Api tests for GoRestApi endpoints', async () => {
     test('delete inactive users - [DELETE] /users/:userId', { tag: [TestTags.Users] }, async ({ usersApi }) => {
         await test.step('make a request to delete all users that have an inactive status', async () => {
             let response = await usersApi.deleteInactiveUsers()
-            expect(response?.status()).toBe(StatusCode.UNAUTHORIZED)
+            expect(response.every(res => res.status() === StatusCode.UNAUTHORIZED)).toBe(true);
             let actualInactiveUsers = await usersApi.getInactiveUsers()
             let expectedInactiveUsersLength = actualInactiveUsers.length
             expect(expectedInactiveUsersLength).toBe(0)
