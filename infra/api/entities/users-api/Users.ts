@@ -92,7 +92,7 @@ export class Users extends ApiClient {
     /**
      * @description replaces each email with .co.il extension
      */
-    async replaceEmailExtensionForUsers() {
+    async replaceEmailExtensionForUsers(): Promise<APIResponse[]> {
         let users = await this.getUsers()
         let usersObject = await users?.json()
         try {
@@ -101,18 +101,22 @@ export class Users extends ApiClient {
                 if (email) {
                     let extension = await this.extractEmailExtension(email);
                     if (extension && extension !== 'co.il') {
-                        let newEmail = email.replace(extension, 'co.il');
-                        let newEmailProperty = { email: newEmail };
-                        return await this.patch(`${this.usersEndpoint}/${user.id}`, { requestData: newEmailProperty, isAuthorizationRequired: true })
+                        const updatedEmail = email.replace(extension, 'co.il');
+                        return this.patch(
+                            `${this.usersEndpoint}/${user.id}`,
+                            {
+                                requestData: { email: updatedEmail },
+                                isAuthorizationRequired: true
+                            }
+                        );
                     }
                 }
-            }))
-            return response.filter((res) => res !== undefined);
+            }));
+            return response.filter((res): res is APIResponse => res !== undefined);
         } catch (error) {
-            throw new Error(`the user emails could be undefined ${error}`)
+            throw new Error(`Error updating email extensions: ${error}`);
         }
     }
-
     async getCurrentUserEmailExtension() {
         let users = await this.getUsers()
         let usersJsonObject = await users?.json()
