@@ -1,6 +1,6 @@
 import { APIResponse } from "@playwright/test";
 import { ApiClient } from "@api-client";
-import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType, payloads } from "@api-helpers";
+import MockDataGenerator, { ApplicationUrl, RequestMethod, PaginationType, payloads, IUser } from "@api-helpers";
 import { ApiEndpoints } from "@api-endpoints";
 
 export class Users extends ApiClient {
@@ -11,11 +11,12 @@ export class Users extends ApiClient {
         return response;
     }
 
-    async getGenderCount(gender: string) {
+    async getGenderCount(gender: string): Promise<number> {
         let response = await this.get(this.usersEndpoint)
         let responseObject = await response?.json()
-        let genderFilter = responseObject.filter((el: any) => el.gender === gender).length
-        return genderFilter
+        let genderFilter = responseObject.filter((user: IUser) => user.gender === gender)
+        let genderCount = genderFilter.length
+        return genderCount
     }
 
     /**
@@ -51,11 +52,12 @@ export class Users extends ApiClient {
     }
 
     async deleteInactiveUsers() {
-        let response: APIResponse | undefined
         let inActiveUsers = await this.getInactiveUsers()
-        for (let user of inActiveUsers) {
-            response = await this.delete(`${this.usersEndpoint}/${user.id}`, { isAuthorizationRequired: true })
-        }
+        let response: APIResponse[] = await Promise.all(
+            inActiveUsers.map((user: IUser) =>
+                this.delete(`${this.usersEndpoint}/${user.id}`, { isAuthorizationRequired: true })
+            )
+        );
         return response;
     }
 
@@ -78,7 +80,7 @@ export class Users extends ApiClient {
     async getTypeOfUserProperties() {
         const usersResponse = await this.getUsers();
         const users = await usersResponse?.json();
-        return users.map((user: any) => [
+        return users.map((user: IUser) => [
             typeof user.id,
             typeof user.name,
             typeof user.email,
@@ -90,36 +92,38 @@ export class Users extends ApiClient {
     /**
      * @description replaces each email with .co.il extension
      */
-    async replaceEmailExtensionForUsers() {
+    async replaceEmailExtensionForUsers(): Promise<APIResponse[]> {
         let users = await this.getUsers()
         let usersObject = await users?.json()
-        let response: APIResponse | undefined
         try {
-            for (let user of usersObject) {
-                let email = user.email
-                let emailExtension = await this.extractEmailExtension(email)
-                if (emailExtension && emailExtension !== 'co.il') {
-                    let newEmail = await email.replace(emailExtension, 'co.il');
-                    let newEmailProperty = { email: newEmail }
-                    response = await this.patch(`${this.usersEndpoint}/${user.id}`, { requestData: newEmailProperty, isAuthorizationRequired: true })
+            let response: APIResponse[] = await Promise.all(usersObject.map(async (user: IUser) => {
+                let email = user.email;
+                if (email) {
+                    let extension = await this.extractEmailExtension(email);
+                    if (extension && extension !== 'co.il') {
+                        const updatedEmail = email.replace(extension, 'co.il');
+                        return this.patch(
+                            `${this.usersEndpoint}/${user.id}`,
+                            {
+                                requestData: { email: updatedEmail },
+                                isAuthorizationRequired: true
+                            }
+                        );
+                    }
                 }
-            }
-            return response
+            }));
+            return response.filter((res: APIResponse) => res !== undefined);
         } catch (error) {
-            throw new Error(`the user emails could be undefined ${error}`)
+            throw new Error(`Error updating email extensions: ${error}`);
         }
     }
-
     async getCurrentUserEmailExtension() {
-        let extensions: string[] = []
         let users = await this.getUsers()
         let usersJsonObject = await users?.json()
-        let userEmails = usersJsonObject
-        for (let user of userEmails) {
-            let extension = await this.extractEmailExtension(user.email)
-            extensions.push(extension!)
-        }
-        return extensions
+        let extentions = await Promise.all(usersJsonObject.map(async (user: IUser) => {
+            return user.email ? await this.extractEmailExtension(user.email) : undefined
+        }))
+        return extentions;
     }
 
     private async extractEmailExtension(email: string) {
@@ -131,7 +135,7 @@ export class Users extends ApiClient {
     private async getUserStatus(status: string) {
         let users = await this.get(this.usersEndpoint)
         let usersJsonObject = await users?.json()
-        let inactiveUsers = usersJsonObject.filter((user: { status: string; }) => user.status === status)
+        let inactiveUsers = usersJsonObject.filter((user: IUser) => user.status === status)
         return inactiveUsers
     }
 }
