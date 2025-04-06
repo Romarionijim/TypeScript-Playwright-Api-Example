@@ -117,6 +117,7 @@ export class Users extends ApiClient {
             throw new Error(`Error updating email extensions: ${error}`);
         }
     }
+    
     async getCurrentUserEmailExtension() {
         let users = await this.getUsers()
         let usersJsonObject = await users?.json()
